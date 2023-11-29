@@ -30,30 +30,29 @@ int main(int argc, char *argv[]) {
     char *hash = argv[2];
     char *word = argv[3];
     if (argc == 4 && strcmp(arg, "-d") == 0) {
-	char *result = convert_to_md5(result, word);
-	int ans = verify_string(result, hash);
-	if (ans) {
-	    printf("|\n"
-	           "|>================CRACKED================<|\n"
-		   "|                                         |\n"
-		   "|> PASSWORD... %s\n"
-		   "|                                         |\n"
-		   "|>================CRACKED================<|\n"
-		   "|\n"
-		   ,word);
-	} else {
-	    printf("|\n"
-	           "|>================XXXXXXX================<|\n"
-		   "|\n");
-	}
+	      char *result = convert_to_md5(result, word);
+	      int ans = verify_string(result, hash);
+	      if (ans) {
+	          printf(
+            "|\n"
+	          "|>================CRACKED================<|\n"
+		        "|                                         |\n"
+		        "|> PASSWORD... %s\n"
+		        "|                                         |\n"
+		        "|>================CRACKED================<|\n"
+		        "|\n", word);
+	      } else {
+	          printf(
+            "|\n"
+	          "|>================XXXXXXX================<|\n"
+		        "|\n");
+	      }
     } else {
         help_menu(name);
     }
     printf("|> Finished.\n");
-    return 0;
-}
 
-char *convert_to_md5(char *result, char *password) {
+char *convert_to_md5(char *result, char *word) {
     unsigned char digest[16];
     MD5_CTX ctx;
     MD5_Init(&ctx);
