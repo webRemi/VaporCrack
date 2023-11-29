@@ -7,7 +7,7 @@
 #include <string.h>
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-char *convert_to_md5(char *result, char *password); // convert word to md5
+char *convert_to_md5(char *result, char *word); // convert word to md5
 int verify_string(char *result, char *hash); // compare converted word with hash
 void help_menu(char *name); // display help menu
 
