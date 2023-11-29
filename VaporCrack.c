@@ -1,23 +1,58 @@
+/*|-----------------------|*/
+/*|> VaporCrack.c ~ 4$X <|*/
+/*|-----------------------|*/
+
 #include <stdio.h>
 #include <openssl/md5.h>
 #include <string.h>
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-char *convert_to_md5(char *result, char *password);
-int verify_string(char *result, char *hash);
+char *convert_to_md5(char *result, char *password); // convert word to md5
+int verify_string(char *result, char *hash); // compare converted word with hash
+void help_menu(char *name); // display help menu
 
-int main() {
-    char *hash = "5d41402abc4b2a76b9719d911017c592";
-    char *password = "hello";
-    char *result = convert_to_md5(result, password);
-    int ans = verify_string(result, hash);
-    printf("ans: %d\n", ans);
-    printf("word: %s\n", password);
+int main(int argc, char *argv[]) {
+    printf(
+    "  _                                                              \n"
+    "- - _-                            ,- _~.                  ,,   \n"
+    "  )-  )   _                      (' /|           _        ||   \n"
+    "  )___)  < \\, -_-_   /'\\\\ ,._-_ ((  ||   ,._-_  < \\,  _-_ ||/\\ \n"
+    " ~)___)  /-|| || \\\\ || ||  ||   ((  ||    ||    /-|| ||   ||_< \n"
+    "  )  )  (( || || || || ||  ||    ( / |    ||   (( || ||   || | \n"
+    " /-_/    \\/\\\\ ||-'  \\\\,/   \\\\,    -____-  \\\\,   \\/\\\\ \\\\,/ \\\\,\\\n"
+    "              |/                                                 \n"
+    "              '                                                 \n"
+    "                      	                                     \n"
+    );
+    printf("|> Starting program...\n");
+    char *name = argv[0];
+    char *arg = argv[1];
+    char *hash = argv[2];
+    char *word = argv[3];
+    if (argc == 4 && strcmp(arg, "-d") == 0) {
+	      char *result = convert_to_md5(result, word);
+	      int ans = verify_string(result, hash);
+	      if (ans) {
+	          printf(
+            "|\n"
+	          "|>================CRACKED================<|\n"
+		        "|                                         |\n"
+		        "|> PASSWORD... %s\n"
+		        "|                                         |\n"
+		        "|>================CRACKED================<|\n"
+		        "|\n", word);
+	      } else {
+	          printf(
+            "|\n"
+	          "|>================XXXXXXX================<|\n"
+		        "|\n");
+	      }
+    } else {
+        help_menu(name);
+    }
+    printf("|> Finished.\n");
 
-    return 0;
-}
-
-char *convert_to_md5(char *result, char *password) {
+char *convert_to_md5(char *result, char *word) {
     unsigned char digest[16];
     MD5_CTX ctx;
     MD5_Init(&ctx);
@@ -34,3 +69,10 @@ int verify_string(char *result, char *hash) {
     return strcmp(result, hash) == 0;
 }
 
+void help_menu(char *name) {
+	printf("|> Usage: %s <hash> <wordlist>\n"
+	       "|> Example: %s hash.txt rockyou.txt\n"
+	       "\tOptions:\n"
+	       "\t\t-h --help help for VaporCrack\n"
+	       "\t\t-d --dictionnary <hash_file> <wordlist_file>\n", name, name);
+}
