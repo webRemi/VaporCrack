@@ -3,16 +3,17 @@
 /*|-----------------------|*/
 
 #include <stdio.h>
-#include <openssl/md5.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <openssl/md5.h>
 #define SIZE 100
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *convert_to_md5(char *result, char *word); // convert word to md5
-int verify_string(char *result, char *hash); // compare converted word with hash
-void help_menu(char *name); // display help menu
 char *extract_hash(char *fhash); // extract hash from file
+int verify_string(char *result, char *hash); // compare converted word with hash
+void help_menu(char *help); // display help menu
 
 int main(int argc, char *argv[]) {
     printf(
@@ -71,15 +72,11 @@ char *convert_to_md5(char *result, char *word) {
     return result;
 }
 
-int verify_string(char *result, char *hash) {
-    return strncmp(result, hash, 32) == 0;
-}
-
 char *extract_hash(char *fhash) {
     FILE *fopen(), *fp;
     static char hash[SIZE];
     if ((fp = fopen(fhash, "r")) == NULL) {
-	fprintf(stderr, "Error in opening file");
+	fprintf(stderr, "Error opening file: %s\n", strerror(errno));
 	exit(1);
     }
     while (!feof(fp)) {
@@ -87,6 +84,10 @@ char *extract_hash(char *fhash) {
     }
     fclose(fp);
     return hash;
+}
+
+int verify_string(char *result, char *hash) {
+    return strncmp(result, hash, 32) == 0;
 }
 
 void help_menu(char *name) {
