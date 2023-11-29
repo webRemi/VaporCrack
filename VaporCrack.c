@@ -5,11 +5,14 @@
 #include <stdio.h>
 #include <openssl/md5.h>
 #include <string.h>
+#include <stdlib.h>
+#define SIZE 100
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *convert_to_md5(char *result, char *word); // convert word to md5
 int verify_string(char *result, char *hash); // compare converted word with hash
 void help_menu(char *name); // display help menu
+char *extract_hash(char *fhash); // extract hash from file
 
 int main(int argc, char *argv[]) {
     printf(
@@ -27,9 +30,10 @@ int main(int argc, char *argv[]) {
     printf("|> Starting program...\n");
     char *name = argv[0];
     char *arg = argv[1];
-    char *hash = argv[2];
+    char *fhash = argv[2];
     char *word = argv[3];
     if (argc == 4 && strcmp(arg, "-d") == 0) {
+	char *hash = extract_hash(fhash);
         char *result = convert_to_md5(result, word);
 	int ans = verify_string(result, hash);
 	if (ans) {
@@ -68,13 +72,27 @@ char *convert_to_md5(char *result, char *word) {
 }
 
 int verify_string(char *result, char *hash) {
-    return strcmp(result, hash) == 0;
+    return strncmp(result, hash, 32) == 0;
+}
+
+char *extract_hash(char *fhash) {
+    FILE *fopen(), *fp;
+    static char hash[SIZE];
+    if ((fp = fopen(fhash, "r")) == NULL) {
+	fprintf(stderr, "Error in opening file");
+	exit(1);
+    }
+    while (!feof(fp)) {
+        fgets(hash, SIZE, fp);
+    }
+    fclose(fp);
+    return hash;
 }
 
 void help_menu(char *name) {
-	printf("|> Usage: %s <hash> <wordlist>\n"
-	       "|> Example: %s hash.txt rockyou.txt\n"
-	       "\tOptions:\n"
-	       "\t\t-h --help help for VaporCrack\n"
-	       "\t\t-d --dictionnary <hash_file> <wordlist_file>\n", name, name);
+    printf("|> Usage: %s <hash> <wordlist>\n"
+           "|> Example: %s hash.txt rockyou.txt\n"
+	   "\tOptions:\n"
+	   "\t\t-h --help help for VaporCrack\n"
+	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n", name, name);
 }
