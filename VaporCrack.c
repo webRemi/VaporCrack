@@ -10,8 +10,8 @@
 #define SIZE 100
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-char *convert_to_md5(char *result, char *fword); // convert word to md5
-char *extract_hash(char *fhash); // extract hash from file
+char *convert_to_md5(char *word); // convert word to md5
+char *extract_file(char *fitem); // extract iitem from file
 int verify_string(char *result, char *hash); // compare converted word with hash
 void help_menu(char *help); // display help menu
 
@@ -34,24 +34,26 @@ int main(int argc, char *argv[]) {
     char *fhash = argv[2];
     char *fword = argv[3];
     if (argc == 4 && strcmp(arg, "-d") == 0) {
-				char *hash = extract_hash(fhash);
-				char *result = convert_to_md5(result, fword);
-				int ans = verify_string(result, hash);
-				if (ans) {
-	    			printf(
+		char *word = extract_file(fword);
+		char *result = convert_to_md5(word);
+		char *hash = extract_file(fhash);
+		int ans = verify_string(result, hash);
+		word = extract_file(fword);
+		if (ans) {
+	    	printf(
             "|\n"
-	    			"|>================CRACKED================<|\n"
-	    			"|                                         |\n"
-	    			"|> PASSWORD... \n"
+	    	"|>================CRACKED================<|\n"
+	    	"|                                         |\n"
+	    	"|> PASSWORD... %s\n"
             "|                                         |\n"
             "|>================CRACKED================<|\n"
-            "|\n");
+            "|\n", word);
         } else {
-	    			printf(
+	    	printf(
             "|\n"
-	    			"|>================XXXXXXX================<|\n"
+	    	"|>================XXXXXXX================<|\n"
             "|\n");
-				}
+		}
     } else {
         help_menu(name);
     }
@@ -59,53 +61,42 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-char *convert_to_md5(char *result, char *fword) {
-		FILE *fopen(), *fp;
-		static char word[SIZE];
-		if ((fp = fopen(fword, "r")) == NULL) {
-				fprintf(stderr, "Error opening file: %s\n", strerror(errno));
-				exit(1);
-    }
-    while (!feof(fp)) {
-        fgets(word, SIZE, fp);
-    }
-    fclose(fp);
-		word[strcspn(word, "\n")] = '\0';
+char *convert_to_md5(char *word) {
     unsigned char digest[16];
     MD5_CTX ctx;
     MD5_Init(&ctx);
     MD5_Update(&ctx, word, strlen(word));
     MD5_Final(digest, &ctx);
-
+	static char result[SIZE];
     for (int i = 0; i < 16; i++) {
         sprintf(result + 2 * i, "%02x", digest[i]);
     }
     return result;
 }
 
-char *extract_hash(char *fhash) {
+char *extract_file(char *fitem) {
     FILE *fopen(), *fp;
-    static char hash[SIZE];
-    if ((fp = fopen(fhash, "r")) == NULL) {
-				fprintf(stderr, "Error opening file: %s\n", strerror(errno));
-				exit(1);
+    static char item[SIZE];
+    if ((fp = fopen(fitem, "r")) == NULL) {
+		fprintf(stderr, "Error opening file: %s\n", strerror(errno));
+		exit(1);
     }
     while (!feof(fp)) {
-        fgets(hash, SIZE, fp);
+        fgets(item, SIZE, fp);
     }
     fclose(fp);
-		hash[strcspn(hash, "\n")] = '\0';
-    return hash;
+		item[strcspn(item, "\n")] = '\0';
+    return item;
 }
 
 int verify_string(char *result, char *hash) {
-		return strncmp(result, hash, 33) == 0;
+	return strncmp(result, hash, 33) == 0;
 }
 
 void help_menu(char *name) {
     printf("|> Usage: %s <hash> <wordlist>\n"
            "|> Example: %s hash.txt rockyou.txt\n"
-	   "\tOptions:\n"
-	   "\t\t-h --help help for VaporCrack\n"
-	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n", name, name);
+		   "\tOptions:\n"
+	   	   "\t\t-h --help help for VaporCrack\n"
+	   	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n", name, name);
 }
