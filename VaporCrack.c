@@ -13,6 +13,7 @@
 char *convert_to_md5(char *word); // convert word to md5
 char *extract_file(char *fitem); // extract iitem from file
 int verify_string(char *result, char *hash); // compare converted word with hash
+void status(int ans, char *word); // display cracking status
 void help_menu(char *help); // display help menu
 
 int main(int argc, char *argv[]) {
@@ -34,27 +35,21 @@ int main(int argc, char *argv[]) {
     char *fhash = argv[2];
     char *fword = argv[3];
     if (argc == 4 && strcmp(arg, "-d") == 0) {
-		char *word = extract_file(fword);
-		char *result = convert_to_md5(word);
 		char *hash = extract_file(fhash);
-		int ans = verify_string(result, hash);
-		word = extract_file(fword);
-		if (ans) {
-	    	printf(
-            "|\n"
-	    	"|>================CRACKED================<|\n"
-	    	"|                                         |\n"
-	    	"|> PASSWORD... %s\n"
-            "|                                         |\n"
-            "|>================CRACKED================<|\n"
-            "|\n", word);
-        } else {
-	    	printf(
-            "|\n"
-	    	"|>================XXXXXXX================<|\n"
-            "|\n");
+		FILE *fopen(), *fp;
+		char word[SIZE];
+		if ((fp = fopen(fword, "r")) == NULL) {
+			fprintf(stderr, "Error opening file: %s\n", strerror(errno));
 		}
-    } else {
+		while (!feof(fp)) {
+			fgets(word, SIZE, fp);
+			word[strcspn(word, "\n")] = '\0';
+			char *result = convert_to_md5(word);
+			int ans = verify_string(result, hash);
+			status(ans, word);
+		}
+		fclose(fp);
+	} else {
         help_menu(name);
     }
     printf("|> Finished.\n");
@@ -62,7 +57,7 @@ int main(int argc, char *argv[]) {
 }
 
 char *convert_to_md5(char *word) {
-    unsigned char digest[16];
+	unsigned char digest[16];
     MD5_CTX ctx;
     MD5_Init(&ctx);
     MD5_Update(&ctx, word, strlen(word));
@@ -91,6 +86,29 @@ char *extract_file(char *fitem) {
 
 int verify_string(char *result, char *hash) {
 	return strncmp(result, hash, 33) == 0;
+}
+
+void status(int ans, char *word) {
+	if (ans) {
+	    printf(
+            "|\n"
+	    	"|>================CRACKED================<|\n"
+	    	"|                                         |\n"
+	    	"|> PASSWORD... %s\n"
+            "|                                         |\n"
+            "|>================CRACKED================<|\n"
+            "|\n", word);
+		exit(1);
+	} else {
+	    printf(
+            "|\n"
+	    	"|>================XXXXXXX================<|\n"
+			"|                                         |\n"
+			"|> TRYING... %s\n" 
+			"|                                         |\n"
+			"|>================XXXXXXX================<|\n"
+            "|\n", word);
+	}
 }
 
 void help_menu(char *name) {
