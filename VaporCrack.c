@@ -15,6 +15,9 @@ char *extract_file(char *fitem); // extract iitem from file
 int verify_string(char *result, char *hash); // compare converted word with hash
 void status(int ans, char *word); // display cracking status
 void help_menu(char *help); // display help menu
+void red(); // set red color
+void bold(); // set bold 
+void reset(); // reset display effects
 
 int main(int argc, char *argv[]) {
     printf(
@@ -41,6 +44,8 @@ int main(int argc, char *argv[]) {
 		if ((fp = fopen(fword, "r")) == NULL) {
 			fprintf(stderr, "Error opening file: %s\n", strerror(errno));
 		}
+		printf("|\n");
+		printf("|> Cracking...\n");
 		while (!feof(fp)) {
 			fgets(word, SIZE, fp);
 			word[strcspn(word, "\n")] = '\0';
@@ -49,6 +54,14 @@ int main(int argc, char *argv[]) {
 			status(ans, word);
 		}
 		fclose(fp);
+		printf(
+			"|\n"
+			"|>================XXXXXXX================<|\n"
+			"|                                         |\n"
+			"|> NOT IN LIST...\n"
+			"|                                         |\n"
+			"|>================XXXXXXX================<|\n"
+			"|\n");
 	} else {
         help_menu(name);
     }
@@ -90,24 +103,21 @@ int verify_string(char *result, char *hash) {
 
 void status(int ans, char *word) {
 	if (ans) {
-	    printf(
+        printf(
+            "\r"
             "|\n"
-	    	"|>================CRACKED================<|\n"
-	    	"|                                         |\n"
-	    	"|> PASSWORD... %s\n"
-            "|                                         |\n"
             "|>================CRACKED================<|\n"
-            "|\n", word);
+            "|                                         |\n"
+            "|> PASSWORD...");
+		bold();
+        red();
+        printf(" %s\n", word);
+        reset();
+        printf("|                                         |\n");
+        printf("|>================CRACKED================<|\n");
+		printf("|\n");
+		printf("|> Finished.\n");
 		exit(1);
-	} else {
-	    printf(
-            "|\n"
-	    	"|>================XXXXXXX================<|\n"
-			"|                                         |\n"
-			"|> TRYING... %s\n" 
-			"|                                         |\n"
-			"|>================XXXXXXX================<|\n"
-            "|\n", word);
 	}
 }
 
@@ -117,4 +127,16 @@ void help_menu(char *name) {
 		   "\tOptions:\n"
 	   	   "\t\t-h --help help for VaporCrack\n"
 	   	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n", name, name);
+}
+
+void red() {
+	printf("\033[1;31m");
+}
+
+void reset() {
+	printf("\033[0m");
+}
+
+void bold() {
+	printf("\e[1m");
 }
