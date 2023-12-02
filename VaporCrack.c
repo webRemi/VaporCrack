@@ -7,10 +7,12 @@
 #include <string.h>
 #include <errno.h>
 #include <openssl/md5.h>
+#include <openssl/sha.h>
 #define SIZE 100
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *convert_to_md5(char *word); // convert word to md5
+char *convert_to_sha1(char *word); // convert word to sha1
 char *extract_file(char *fitem); // extract iitem from file
 int verify_string(char *result, char *hash); // compare converted word with hash
 void status(int ans, char *word); // display cracking status
@@ -35,9 +37,18 @@ int main(int argc, char *argv[]) {
     printf("|> Starting program...\n");
     char *name = argv[0];
     char *arg = argv[1];
-    char *fhash = argv[2];
-    char *fword = argv[3];
-    if (argc == 4 && strcmp(arg, "-d") == 0) {
+	char *arg2 = argv[2];
+	char *algo = argv[3];
+    char *fhash = argv[4];
+    char *fword = argv[5];
+    if (argc == 6 && strcmp(arg, "-d") == 0) {
+		if (strcmp(arg2, "-a") == 0) {
+			if (strcmp(algo, "md5") == 0) {
+				printf("|> Enter md5 mode...\n");
+			} else if (strcmp(algo, "sha1") == 0) {
+				printf("|> Enter sha1 mode...\n");
+			}
+		}
 		char *hash = extract_file(fhash);
 		FILE *fopen(), *fp;
 		char word[SIZE];
@@ -49,9 +60,15 @@ int main(int argc, char *argv[]) {
 		while (!feof(fp)) {
 			fgets(word, SIZE, fp);
 			word[strcspn(word, "\n")] = '\0';
-			char *result = convert_to_md5(word);
-			int ans = verify_string(result, hash);
-			status(ans, word);
+			if (strcmp(algo, "md5") == 0) {
+				char *result = convert_to_md5(word);
+				int ans = verify_string(result, hash);
+				status(ans, word);
+			} else if (strcmp(algo, "sha1") == 0) {
+				char *result = convert_to_sha1(word);
+				int ans = verify_string(result, hash);
+				status(ans, word);
+			}
 		}
 		fclose(fp);
 		printf(
@@ -82,6 +99,19 @@ char *convert_to_md5(char *word) {
     return result;
 }
 
+char *convert_to_sha1(char *word) {
+	unsigned char digest[20];
+	SHA_CTX ctx;
+	SHA1_Init(&ctx);
+	SHA1_Update(&ctx, word, strlen(word));
+	SHA1_Final(digest, &ctx);
+	static char result[SIZE];
+	for (int i = 0; i < 20; i++) {
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	}
+	return result;
+}
+
 char *extract_file(char *fitem) {
     FILE *fopen(), *fp;
     static char item[SIZE];
@@ -98,7 +128,7 @@ char *extract_file(char *fitem) {
 }
 
 int verify_string(char *result, char *hash) {
-	return strncmp(result, hash, 33) == 0;
+	return strcmp(result, hash) == 0;
 }
 
 void status(int ans, char *word) {
@@ -126,7 +156,8 @@ void help_menu(char *name) {
            "|> Example: %s hash.txt rockyou.txt\n"
 		   "\tOptions:\n"
 	   	   "\t\t-h --help help for VaporCrack\n"
-	   	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n", name, name);
+	   	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n"
+		   "\t\t-a --algorithm <md5> | <sha1>\n", name, name);
 }
 
 void red() {
