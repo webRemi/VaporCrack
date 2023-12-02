@@ -1,5 +1,5 @@
 /*|-----------------------|*/
-/*|> VaporCrack.c ~ 4$X <|*/
+/*|> VaporCrack.c ~ 4$X  <|*/
 /*|-----------------------|*/
 
 #include <stdio.h>
@@ -9,13 +9,16 @@
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 #define SIZE 100
+#define MD5_SIZE 16
+#define SHA1_SIZE 20
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *convert_to_md5(char *word); // convert word to md5
 char *convert_to_sha1(char *word); // convert word to sha1
 char *extract_file(char *fitem); // extract iitem from file
 int verify_string(char *result, char *hash); // compare converted word with hash
-void status(int ans, char *word); // display cracking status
+void status_cracked(int ans, char *word); // display cracked status
+void status_no_cracked(); // display no-cracked status
 void help_menu(char *help); // display help menu
 void red(); // set red color
 void bold(); // set bold 
@@ -63,22 +66,15 @@ int main(int argc, char *argv[]) {
 			if (strcmp(algo, "md5") == 0) {
 				char *result = convert_to_md5(word);
 				int ans = verify_string(result, hash);
-				status(ans, word);
+				status_cracked(ans, word);
 			} else if (strcmp(algo, "sha1") == 0) {
 				char *result = convert_to_sha1(word);
 				int ans = verify_string(result, hash);
-				status(ans, word);
+				status_cracked(ans, word);
 			}
 		}
 		fclose(fp);
-		printf(
-			"|\n"
-			"|>================XXXXXXX================<|\n"
-			"|                                         |\n"
-			"|> NOT IN LIST...\n"
-			"|                                         |\n"
-			"|>================XXXXXXX================<|\n"
-			"|\n");
+		status_no_cracked();
 	} else {
         help_menu(name);
     }
@@ -87,26 +83,26 @@ int main(int argc, char *argv[]) {
 }
 
 char *convert_to_md5(char *word) {
-	unsigned char digest[16];
+	unsigned char digest[MD5_SIZE];
     MD5_CTX ctx;
     MD5_Init(&ctx);
     MD5_Update(&ctx, word, strlen(word));
     MD5_Final(digest, &ctx);
 	static char result[SIZE];
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < MD5_SIZE; i++) {
         sprintf(result + 2 * i, "%02x", digest[i]);
     }
     return result;
 }
 
 char *convert_to_sha1(char *word) {
-	unsigned char digest[20];
+	unsigned char digest[SHA1_SIZE];
 	SHA_CTX ctx;
 	SHA1_Init(&ctx);
 	SHA1_Update(&ctx, word, strlen(word));
 	SHA1_Final(digest, &ctx);
 	static char result[SIZE];
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < SHA1_SIZE; i++) {
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	}
 	return result;
@@ -131,7 +127,7 @@ int verify_string(char *result, char *hash) {
 	return strcmp(result, hash) == 0;
 }
 
-void status(int ans, char *word) {
+void status_cracked(int ans, char *word) {
 	if (ans) {
         printf(
             "\r"
@@ -149,6 +145,17 @@ void status(int ans, char *word) {
 		printf("|> Finished.\n");
 		exit(1);
 	}
+}
+
+void status_no_cracked() {
+	printf(
+		"|\n"
+		"|>================XXXXXXX================<|\n"
+		"|                                         |\n"
+		"|> NOT IN LIST...\n"
+		"|                                         |\n"
+		"|>================XXXXXXX================<|\n"
+		"|\n");
 }
 
 void help_menu(char *name) {
