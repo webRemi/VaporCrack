@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
+#include <time.h>
 #define SIZE 100
 #define MD5_SIZE 16
 #define SHA1_SIZE 20
@@ -23,9 +24,11 @@ void help_menu(char *help); // display help menu
 void red(); // set red color
 void bold(); // set bold 
 void reset(); // reset display effects
+long int start_timer(); // start timer
+void show_time(long int duration); // show time spent on cracking
 
 int main(int argc, char *argv[]) {
-    printf(
+	printf(
     "  _                                                              \n"
     "- - _-                            ,- _~.                  ,,   \n"
     "  )-  )   _                      (' /|           _        ||   \n"
@@ -38,6 +41,8 @@ int main(int argc, char *argv[]) {
     "                      	                                     \n"
     );
     printf("|> Starting program...\n");
+	clock_t duration;
+	duration = start_timer();
     char *name = argv[0];
     char *arg = argv[1];
 	char *arg2 = argv[2];
@@ -72,6 +77,10 @@ int main(int argc, char *argv[]) {
 				int ans = verify_string(result, hash);
 				status_cracked(ans, word);
 			}
+			int clean_space = SIZE - strlen(word);
+			printf("\e[?25l");
+			printf("\r|> Trying... %s%*s\r", word, clean_space, "");
+			printf("\e[?25h");
 		}
 		fclose(fp);
 		status_no_cracked();
@@ -79,7 +88,7 @@ int main(int argc, char *argv[]) {
         help_menu(name);
     }
     printf("|> Finished.\n");
-    return 0;
+	return 0;
 }
 
 char *convert_to_md5(char *word) {
@@ -177,4 +186,16 @@ void reset() {
 
 void bold() {
 	printf("\e[1m");
+}
+
+long int start_timer() {
+	clock_t t;
+	t = 0;
+	return t;
+}
+
+void show_time(long int duration) {
+	duration = clock() - duration;
+	double actual_time = ((double)duration)/CLOCKS_PER_SEC;;
+	printf("\n|> %.2f seconds", actual_time);
 }
