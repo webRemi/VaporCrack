@@ -1,3 +1,10 @@
 # VaporCrack
-Hash Cracker (md5 for now)
-Compiling instructions: gcc cracker3.c -lcrypto
+<strong>Hash Cracker</strong>
+<ul>
+<li>md5</li>
+<li>sha1</li>
+</ul>
+<br>
+<strong>Compiling Instructions:</strong>
+<br>
+gcc VaporCrack.c -lcrypto -o VaporCrack
