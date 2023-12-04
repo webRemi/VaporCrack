@@ -9,6 +9,7 @@
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 #include <time.h>
+#include <unistd.h>
 #define SIZE 100
 #define MD5_SIZE 16
 #define SHA1_SIZE 20
@@ -25,7 +26,7 @@ void red(); // set red color
 void bold(); // set bold 
 void reset(); // reset display effects
 long int start_timer(); // start timer
-void show_time(long int duration); // show time spent on cracking
+double show_time(long int duration); // show time spent on cracking
 
 int main(int argc, char *argv[]) {
 	printf(
@@ -40,7 +41,7 @@ int main(int argc, char *argv[]) {
     "              '                                                 \n"
     "                      	                                     \n"
     );
-    printf("|> Starting program...\n");
+    printf("|> Starting VaporCrack...\n");
 	clock_t duration;
 	duration = start_timer();
     char *name = argv[0];
@@ -50,11 +51,12 @@ int main(int argc, char *argv[]) {
     char *fhash = argv[4];
     char *fword = argv[5];
     if (argc == 6 && strcmp(arg, "-d") == 0) {
+		printf("|> Mode: dictionnary\n");
 		if (strcmp(arg2, "-a") == 0) {
 			if (strcmp(algo, "md5") == 0) {
-				printf("|> Enter md5 mode...\n");
+				printf("|> Algorithm: md5\n");
 			} else if (strcmp(algo, "sha1") == 0) {
-				printf("|> Enter sha1 mode...\n");
+				printf("|> Algorithm: sha1\n");
 			}
 		}
 		char *hash = extract_file(fhash);
@@ -63,9 +65,10 @@ int main(int argc, char *argv[]) {
 		if ((fp = fopen(fword, "r")) == NULL) {
 			fprintf(stderr, "Error opening file: %s\n", strerror(errno));
 		}
-		printf("|\n");
 		printf("|> Cracking...\n");
+		long long wn = 0;
 		while (!feof(fp)) {
+			wn++;
 			fgets(word, SIZE, fp);
 			word[strcspn(word, "\n")] = '\0';
 			if (strcmp(algo, "md5") == 0) {
@@ -77,17 +80,15 @@ int main(int argc, char *argv[]) {
 				int ans = verify_string(result, hash);
 				status_cracked(ans, word);
 			}
-			int clean_space = SIZE - strlen(word);
-			printf("\e[?25l");
-			printf("\r|> Trying... %s%*s\r", word, clean_space, "");
-			printf("\e[?25h");
+			printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
+			fflush(stdout);
 		}
 		fclose(fp);
 		status_no_cracked();
 	} else {
         help_menu(name);
     }
-    printf("|> Finished.\n");
+    printf("|> Finished\n");
 	return 0;
 }
 
@@ -140,31 +141,28 @@ void status_cracked(int ans, char *word) {
 	if (ans) {
         printf(
             "\r"
-            "|\n"
             "|>================CRACKED================<|\n"
             "|                                         |\n"
-            "|> PASSWORD...");
+            "|>");
 		bold();
         red();
         printf(" %s\n", word);
         reset();
         printf("|                                         |\n");
         printf("|>================CRACKED================<|\n");
-		printf("|\n");
-		printf("|> Finished.\n");
-		exit(1);
+		printf("|> Finished\n");
+		exit(0);
 	}
 }
 
 void status_no_cracked() {
 	printf(
-		"|\n"
 		"|>================XXXXXXX================<|\n"
 		"|                                         |\n"
-		"|> NOT IN LIST...\n"
+		"|> NOT IN LIST\n"
 		"|                                         |\n"
 		"|>================XXXXXXX================<|\n"
-		"|\n");
+	);
 }
 
 void help_menu(char *name) {
@@ -194,8 +192,8 @@ long int start_timer() {
 	return t;
 }
 
-void show_time(long int duration) {
+double show_time(long int duration) {
 	duration = clock() - duration;
 	double actual_time = ((double)duration)/CLOCKS_PER_SEC;;
-	printf("\n|> %.2f seconds", actual_time);
+	return actual_time;
 }
