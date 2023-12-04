@@ -9,14 +9,16 @@
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 #include <time.h>
-#include <unistd.h>
+#include <openssl/blowfish.h>
 #define SIZE 100
 #define MD5_SIZE 16
 #define SHA1_SIZE 20
+#define SHA256_SIZE 32
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *convert_to_md5(char *word); // convert word to md5
 char *convert_to_sha1(char *word); // convert word to sha1
+char *convert_to_sha256(char *word); // convert word to sha256
 char *extract_file(char *fitem); // extract iitem from file
 int verify_string(char *result, char *hash); // compare converted word with hash
 void status_cracked(int ans, char *word); // display cracked status
@@ -57,6 +59,8 @@ int main(int argc, char *argv[]) {
 				printf("|> Algorithm: md5\n");
 			} else if (strcmp(algo, "sha1") == 0) {
 				printf("|> Algorithm: sha1\n");
+			} else if (strcmp(algo, "sha256") == 0) {
+				printf("|> Algorithm: sha256\n");
 			}
 		}
 		char *hash = extract_file(fhash);
@@ -77,6 +81,10 @@ int main(int argc, char *argv[]) {
 				status_cracked(ans, word);
 			} else if (strcmp(algo, "sha1") == 0) {
 				char *result = convert_to_sha1(word);
+				int ans = verify_string(result, hash);
+				status_cracked(ans, word);
+			} else if (strcmp(algo, "sha256") == 0) {
+				char *result = convert_to_sha256(word);
 				int ans = verify_string(result, hash);
 				status_cracked(ans, word);
 			}
@@ -113,6 +121,19 @@ char *convert_to_sha1(char *word) {
 	SHA1_Final(digest, &ctx);
 	static char result[SIZE];
 	for (int i = 0; i < SHA1_SIZE; i++) {
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	}
+	return result;
+}
+
+char *convert_to_sha256(char *word) {
+	unsigned char digest[SHA256_SIZE];
+	SHA256_CTX ctx;
+	SHA256_Init(&ctx);
+	SHA256_Update(&ctx, word, strlen(word));
+	SHA256_Final(digest, &ctx);
+	static char result[SIZE];
+	for (int i = 0; i < SHA256_SIZE; i++) {
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	}
 	return result;
