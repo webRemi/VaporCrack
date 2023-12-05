@@ -4,6 +4,7 @@
 <li>md5</li>
 <li>sha1</li>
 <li>sha256</li>
+<li>md4</li>
 </ul>
 <br>
 <strong>Compiling Instructions:</strong>
