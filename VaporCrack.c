@@ -54,15 +54,8 @@ int main(int argc, char *argv[]) {
     char *fword = argv[5];
     if (argc == 6 && strcmp(arg, "-d") == 0) {
 		printf("|> Mode: dictionnary\n");
-		if (strcmp(arg2, "-a") == 0) {
-			if (strcmp(algo, "md5") == 0) {
-				printf("|> Algorithm: md5\n");
-			} else if (strcmp(algo, "sha1") == 0) {
-				printf("|> Algorithm: sha1\n");
-			} else if (strcmp(algo, "sha256") == 0) {
-				printf("|> Algorithm: sha256\n");
-			}
-		}
+		if (strcmp(arg2, "-a") == 0) 
+			printf("|> Algorithm: %s\n", algo);
 		char *hash = extract_file(fhash);
 		FILE *fopen(), *fp;
 		char word[SIZE];
@@ -75,19 +68,15 @@ int main(int argc, char *argv[]) {
 			wn++;
 			fgets(word, SIZE, fp);
 			word[strcspn(word, "\n")] = '\0';
-			if (strcmp(algo, "md5") == 0) {
-				char *result = convert_to_md5(word);
-				int ans = verify_string(result, hash);
-				status_cracked(ans, word);
-			} else if (strcmp(algo, "sha1") == 0) {
-				char *result = convert_to_sha1(word);
-				int ans = verify_string(result, hash);
-				status_cracked(ans, word);
-			} else if (strcmp(algo, "sha256") == 0) {
-				char *result = convert_to_sha256(word);
-				int ans = verify_string(result, hash);
-				status_cracked(ans, word);
-			}
+			char *result;
+			if (strcmp(algo, "md5") == 0)
+				result = convert_to_md5(word);
+			else if (strcmp(algo, "sha1") == 0)
+				result = convert_to_sha1(word);
+			else if (strcmp(algo, "sha256") == 0)
+				result = convert_to_sha256(word);
+			int ans = verify_string(result, hash);
+			status_cracked(ans, word);
 			printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
 			fflush(stdout);
 		}
@@ -107,9 +96,8 @@ char *convert_to_md5(char *word) {
     MD5_Update(&ctx, word, strlen(word));
     MD5_Final(digest, &ctx);
 	static char result[SIZE];
-    for (int i = 0; i < MD5_SIZE; i++) {
+    for (int i = 0; i < MD5_SIZE; i++)
         sprintf(result + 2 * i, "%02x", digest[i]);
-    }
     return result;
 }
 
@@ -120,9 +108,8 @@ char *convert_to_sha1(char *word) {
 	SHA1_Update(&ctx, word, strlen(word));
 	SHA1_Final(digest, &ctx);
 	static char result[SIZE];
-	for (int i = 0; i < SHA1_SIZE; i++) {
+	for (int i = 0; i < SHA1_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
-	}
 	return result;
 }
 
@@ -133,9 +120,8 @@ char *convert_to_sha256(char *word) {
 	SHA256_Update(&ctx, word, strlen(word));
 	SHA256_Final(digest, &ctx);
 	static char result[SIZE];
-	for (int i = 0; i < SHA256_SIZE; i++) {
+	for (int i = 0; i < SHA256_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
-	}
 	return result;
 }
 
