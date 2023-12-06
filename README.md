@@ -1,4 +1,5 @@
 # VaporCrack
+<img src="/assets/images/VaporCrack.png">
 ## Hash Cracker
 Supported algorithms
 * md5
