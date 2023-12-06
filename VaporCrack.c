@@ -11,17 +11,19 @@
 #include <openssl/md4.h>
 #include <time.h>
 #include <openssl/blowfish.h>
-#define SIZE 100
+#define SIZE 500
 #define MD5_SIZE 16
 #define SHA1_SIZE 20
 #define SHA256_SIZE 32
 #define MD4_SIZE 16
+#define SHA512_SIZE 64
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *convert_to_md5(char *word); // convert word to md5
 char *convert_to_sha1(char *word); // convert word to sha1
 char *convert_to_sha256(char *word); // convert word to sha256
 char *convert_to_md4(char *word); // convert word to md4
+char *convert_to_sha512(char *word); //convert word to sha512
 char *extract_file(char *fitem); // extract iitem from file
 int verify_string(char *result, char *hash); // compare converted word with hash
 void status_cracked(int ans, char *word); // display cracked status
@@ -80,6 +82,8 @@ int main(int argc, char *argv[]) {
 				result = convert_to_sha256(word);
 			else if (strcmp(algo, "md4") == 0)
 				result = convert_to_md4(word);
+			else if (strcmp(algo, "sha512") == 0)
+				result = convert_to_sha512(word);
 			int ans = verify_string(result, hash);
 			status_cracked(ans, word);
 			printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
@@ -138,6 +142,18 @@ char *convert_to_md4(char *word) {
 	MD4_Final(digest, &ctx);
 	static char result[SIZE];
 	for (int i = 0; i < MD4_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+}
+
+char *convert_to_sha512(char *word) {
+	unsigned char digest[SHA512_SIZE];
+	SHA512_CTX ctx;
+	SHA512_Init(&ctx);
+	SHA512_Update(&ctx, word, strlen(word));
+	SHA512_Final(digest, &ctx);
+	static char result[SIZE];
+	for (int i = 0; i < SHA512_SIZE; i++) 
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }
