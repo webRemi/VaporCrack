@@ -12,6 +12,4 @@ Supported algorithms
 <br>
 <strong>Compiling Instructions:</strong>
 <br>
-```
-gcc VaporCrack.c -lcrypto -o VaporCrack
-```
+```gcc VaporCrack.c -lcrypto -o VaporCrack```
