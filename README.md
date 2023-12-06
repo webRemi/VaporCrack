@@ -1,5 +1,6 @@
 # VaporCrack
-<img src="/assets/images/VaporCrack.png"/>
+![VaporCrack Logo](/assets/images/VaporCrack.png)
+
 ## Hash Cracker
 Supported algorithms
 * md5
@@ -7,7 +8,9 @@ Supported algorithms
 * sha256
 * md4
 * sha512
+
 ### Compiling instructions
-```
+
+```bash
 gcc VaporCrack.c -lcrypto -o VaporCrack
 ```
