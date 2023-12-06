@@ -6,39 +6,38 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
+#include <openssl/md4.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
-#include <openssl/md4.h>
-#include <time.h>
-#include <openssl/blowfish.h>
 #include <openssl/evp.h>
 #define SIZE 500
+#define MD4_SIZE 16
 #define MD5_SIZE 16
 #define SHA1_SIZE 20
 #define SHA256_SIZE 32
-#define MD4_SIZE 16
 #define SHA512_SIZE 64
-#define BLAKE2B_SIZE 64
 #define BLAKE2S_SIZE 32
+#define BLAKE2B_SIZE 64
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
+char *convert_to_md4(char *word); // convert word to md4
 char *convert_to_md5(char *word); // convert word to md5
 char *convert_to_sha1(char *word); // convert word to sha1
 char *convert_to_sha256(char *word); // convert word to sha256
-char *convert_to_md4(char *word); // convert word to md4
 char *convert_to_sha512(char *word); //convert word to sha512
-char *convert_to_blake2b(char *word); // convert word to blake2b
 char *convert_to_blake2s(char *word); // convert word to blake2s
-char *extract_file(char *fitem); // extract iitem from file
+char *convert_to_blake2b(char *word); // convert word to blake2b
+char *extract_file(char *fitem); // extract item from file
 int verify_string(char *result, char *hash); // compare converted word with hash
+long int start_timer(); // start timer
+double show_time(long int duration); // show time spent on cracking
 void status_cracked(int ans, char *word); // display cracked status
 void status_no_cracked(); // display no-cracked status
 void help_menu(char *help); // display help menu
 void red(); // set red color
 void bold(); // set bold 
 void reset(); // reset display effects
-long int start_timer(); // start timer
-double show_time(long int duration); // show time spent on cracking
 
 int main(int argc, char *argv[]) {
 	printf(
@@ -107,6 +106,18 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
+char *convert_to_md4(char *word) {
+	unsigned char digest[MD4_SIZE];
+	MD4_CTX ctx;
+	MD4_Init(&ctx);
+	MD4_Update(&ctx, word, strlen(word));
+	MD4_Final(digest, &ctx);
+	static char result[SIZE];
+	for (int i = 0; i < MD4_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+}
+
 char *convert_to_md5(char *word) {
 	unsigned char digest[MD5_SIZE];
     MD5_CTX ctx;
@@ -143,18 +154,6 @@ char *convert_to_sha256(char *word) {
 	return result;
 }
 
-char *convert_to_md4(char *word) {
-	unsigned char digest[MD4_SIZE];
-	MD4_CTX ctx;
-	MD4_Init(&ctx);
-	MD4_Update(&ctx, word, strlen(word));
-	MD4_Final(digest, &ctx);
-	static char result[SIZE];
-	for (int i = 0; i < MD4_SIZE; i++)
-		sprintf(result + 2 * i, "%02x", digest[i]);
-	return result;
-}
-
 char *convert_to_sha512(char *word) {
 	unsigned char digest[SHA512_SIZE];
 	SHA512_CTX ctx;
@@ -163,21 +162,6 @@ char *convert_to_sha512(char *word) {
 	SHA512_Final(digest, &ctx);
 	static char result[SIZE];
 	for (int i = 0; i < SHA512_SIZE; i++) 
-		sprintf(result + 2 * i, "%02x", digest[i]);
-	return result;
-}
-
-char *convert_to_blake2b(char *word) {
-	unsigned char digest[BLAKE2B_SIZE];
-	const EVP_MD *md = EVP_blake2b512();
-	EVP_MD_CTX *mdctx;
-	mdctx = EVP_MD_CTX_new();
-	EVP_DigestInit_ex(mdctx, md, NULL);
-	EVP_DigestUpdate(mdctx, word, strlen(word));
-	EVP_DigestFinal(mdctx, digest, NULL);
-	EVP_MD_CTX_free(mdctx);
-	static char result[SIZE];
-	for (int i = 0; i < BLAKE2B_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }
@@ -193,6 +177,20 @@ char *convert_to_blake2s(char *word) {
 	EVP_MD_CTX_free(mdctx);
 	static char result[SIZE];
 	for (int i = 0; i < BLAKE2S_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+}
+char *convert_to_blake2b(char *word) {
+	unsigned char digest[BLAKE2B_SIZE];
+	const EVP_MD *md = EVP_blake2b512();
+	EVP_MD_CTX *mdctx;
+	mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	static char result[SIZE];
+	for (int i = 0; i < BLAKE2B_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }
@@ -214,6 +212,18 @@ char *extract_file(char *fitem) {
 
 int verify_string(char *result, char *hash) {
 	return strcmp(result, hash) == 0;
+}
+
+long int start_timer() {
+	clock_t t;
+	t = 0;
+	return t;
+}
+
+double show_time(long int duration) {
+	duration = clock() - duration;
+	double actual_time = ((double)duration)/CLOCKS_PER_SEC;;
+	return actual_time;
 }
 
 void status_cracked(int ans, char *word) {
@@ -263,16 +273,4 @@ void reset() {
 
 void bold() {
 	printf("\e[1m");
-}
-
-long int start_timer() {
-	clock_t t;
-	t = 0;
-	return t;
-}
-
-double show_time(long int duration) {
-	duration = clock() - duration;
-	double actual_time = ((double)duration)/CLOCKS_PER_SEC;;
-	return actual_time;
 }
