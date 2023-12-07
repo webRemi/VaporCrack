@@ -7,10 +7,8 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
-#include <openssl/md4.h>
-#include <openssl/md5.h>
-#include <openssl/sha.h>
 #include <openssl/evp.h>
+#include <openssl/md4.h>
 #define SIZE 500
 #define MD4_SIZE 16
 #define MD5_SIZE 16
@@ -78,21 +76,23 @@ int main(int argc, char *argv[]) {
 			fgets(word, SIZE, fp);
 			word[strcspn(word, "\n")] = '\0';
 			char *result;
-			if (strcmp(algo, "md5") == 0)
+			if (strcmp(algo, "md4") == 0) {
+				result = convert_to_md4(word);
+			}
+			else if (strcmp(algo, "md5") == 0)
 				result = convert_to_md5(word);
 			else if (strcmp(algo, "sha1") == 0)
 				result = convert_to_sha1(word);
 			else if (strcmp(algo, "sha256") == 0)
 				result = convert_to_sha256(word);
-			else if (strcmp(algo, "md4") == 0)
-				result = convert_to_md4(word);
 			else if (strcmp(algo, "sha512") == 0)
 				result = convert_to_sha512(word);
-			else if (strcmp(algo, "blake2b") == 0)
-				result = convert_to_blake2b(word);
-			else if (strcmp(algo, "blake2s") == 0) 
+			else if (strcmp(algo, "blake2s") == 0)
 				result = convert_to_blake2s(word);
+			else if (strcmp(algo, "blake2b") == 0) 
+				result = convert_to_blake2b(word);
 			int ans = verify_string(result, hash);
+			free(result);
 			status_cracked(ans, word);
 			printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
 			fflush(stdout);
@@ -106,13 +106,36 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
+/*char *convert_to_md4(char *word) {
+	unsigned char digest[MD4_SIZE];
+	const EVP_MD *md = EVP_md4();
+	EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * MD4_SIZE + 1);
+    if (result == NULL) {
+        fprintf(stderr, "Error allocating memory\n");
+        exit(1);
+    }
+	for (int i = 0; i < MD4_SIZE; i++) 
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+}*/
+
+
 char *convert_to_md4(char *word) {
 	unsigned char digest[MD4_SIZE];
 	MD4_CTX ctx;
 	MD4_Init(&ctx);
 	MD4_Update(&ctx, word, strlen(word));
 	MD4_Final(digest, &ctx);
-	static char result[SIZE];
+	char *result = malloc(2 * MD4_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
 	for (int i = 0; i < MD4_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
@@ -120,47 +143,74 @@ char *convert_to_md4(char *word) {
 
 char *convert_to_md5(char *word) {
 	unsigned char digest[MD5_SIZE];
-    MD5_CTX ctx;
-    MD5_Init(&ctx);
-    MD5_Update(&ctx, word, strlen(word));
-    MD5_Final(digest, &ctx);
-	static char result[SIZE];
-    for (int i = 0; i < MD5_SIZE; i++)
-        sprintf(result + 2 * i, "%02x", digest[i]);
-    return result;
+	const EVP_MD *md = EVP_md5();
+	EVP_MD_CTX *mdctx;
+	mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * MD5_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < MD5_SIZE; i++) 
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
 }
 
 char *convert_to_sha1(char *word) {
 	unsigned char digest[SHA1_SIZE];
-	SHA_CTX ctx;
-	SHA1_Init(&ctx);
-	SHA1_Update(&ctx, word, strlen(word));
-	SHA1_Final(digest, &ctx);
-	static char result[SIZE];
-	for (int i = 0; i < SHA1_SIZE; i++)
+	const EVP_MD *md = EVP_sha1();
+	EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * SHA1_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < SHA1_SIZE; i++) 
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }
 
 char *convert_to_sha256(char *word) {
 	unsigned char digest[SHA256_SIZE];
-	SHA256_CTX ctx;
-	SHA256_Init(&ctx);
-	SHA256_Update(&ctx, word, strlen(word));
-	SHA256_Final(digest, &ctx);
-	static char result[SIZE];
-	for (int i = 0; i < SHA256_SIZE; i++)
+	const EVP_MD *md = EVP_sha256();
+	EVP_MD_CTX *mdctx;
+	mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * SHA256_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < SHA256_SIZE; i++) 
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }
 
 char *convert_to_sha512(char *word) {
 	unsigned char digest[SHA512_SIZE];
-	SHA512_CTX ctx;
-	SHA512_Init(&ctx);
-	SHA512_Update(&ctx, word, strlen(word));
-	SHA512_Final(digest, &ctx);
-	static char result[SIZE];
+	const EVP_MD *md = EVP_sha512();
+	EVP_MD_CTX *mdctx;
+	mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * SHA512_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
 	for (int i = 0; i < SHA512_SIZE; i++) 
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
@@ -175,11 +225,16 @@ char *convert_to_blake2s(char *word) {
 	EVP_DigestUpdate(mdctx, word, strlen(word));
 	EVP_DigestFinal(mdctx, digest, NULL);
 	EVP_MD_CTX_free(mdctx);
-	static char result[SIZE];
+	char *result = malloc(2 * BLAKE2S_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
 	for (int i = 0; i < BLAKE2S_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }
+
 char *convert_to_blake2b(char *word) {
 	unsigned char digest[BLAKE2B_SIZE];
 	const EVP_MD *md = EVP_blake2b512();
@@ -189,7 +244,11 @@ char *convert_to_blake2b(char *word) {
 	EVP_DigestUpdate(mdctx, word, strlen(word));
 	EVP_DigestFinal(mdctx, digest, NULL);
 	EVP_MD_CTX_free(mdctx);
-	static char result[SIZE];
+	char *result = malloc(2 * BLAKE2B_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
 	for (int i = 0; i < BLAKE2B_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
@@ -246,7 +305,7 @@ void status_cracked(int ans, char *word) {
 
 void status_no_cracked() {
 	printf(
-		"|>================XXXXXXX================<|\n"
+		"\n|>================XXXXXXX================<|\n"
 		"|                                         |\n"
 		"|> NOT IN LIST\n"
 		"|                                         |\n"
