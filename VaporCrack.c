@@ -11,6 +11,7 @@
 #include <openssl/md4.h>
 #define SIZE 500
 #define MD4_SIZE 16
+#define HALFMD5_SIZE 8
 #define MD5_SIZE 16
 #define SHA1_SIZE 20
 #define SHA256_SIZE 32
@@ -20,6 +21,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *convert_to_md4(char *word); // convert word to md4
+char *convert_to_halfmd5(char *word); // convert word to halfmd5
 char *convert_to_md5(char *word); // convert word to md5
 char *convert_to_sha1(char *word); // convert word to sha1
 char *convert_to_sha256(char *word); // convert word to sha256
@@ -76,9 +78,10 @@ int main(int argc, char *argv[]) {
 			fgets(word, SIZE, fp);
 			word[strcspn(word, "\n")] = '\0';
 			char *result;
-			if (strcmp(algo, "md4") == 0) {
+			if (strcmp(algo, "md4") == 0)
 				result = convert_to_md4(word);
-			}
+			else if (strcmp(algo, "halfmd5") == 0) 
+				result = convert_to_halfmd5(word);
 			else if (strcmp(algo, "md5") == 0)
 				result = convert_to_md5(word);
 			else if (strcmp(algo, "sha1") == 0)
@@ -137,6 +140,25 @@ char *convert_to_md4(char *word) {
 		exit(1);
 	}
 	for (int i = 0; i < MD4_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+}
+
+char *convert_to_halfmd5(char *word) {
+	unsigned char digest[MD5_SIZE];
+	const EVP_MD *md = EVP_md5();
+	EVP_MD_CTX *mdctx;
+	mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * HALFMD5_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < HALFMD5_SIZE; i++) 
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }

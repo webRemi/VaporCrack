@@ -7,6 +7,7 @@
 | Algorithm | Comand | 
 | --- | --- |
 | MD4 | `md4` |
+| HALF-MD5 | `halfmd5` |
 | MD5 | `md5` |
 | SHA1 | `sha1` |
 | SHA256 | `sha256` |
