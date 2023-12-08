@@ -20,6 +20,7 @@
 #define BLAKE2B_SIZE 64
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
+char *brute(int position); // cook a potential words
 char *convert_to_md4(char *word); // convert word to md4
 char *convert_to_halfmd5(char *word); // convert word to halfmd5
 char *convert_to_md5(char *word); // convert word to md5
@@ -59,9 +60,12 @@ int main(int argc, char *argv[]) {
     char *arg = argv[1];
 	char *arg2 = argv[2];
 	char *algo = argv[3];
-    char *fhash = argv[4];
-    char *fword = argv[5];
+	char *fhash = argv[4];
     if (argc == 6 && strcmp(arg, "-d") == 0) {
+		char *arg2 = argv[2];
+		char *algo = argv[3];
+		char *fhash = argv[4];
+		char *fword = argv[5];
 		puts("|> Mode: dictionnary");
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
@@ -102,11 +106,57 @@ int main(int argc, char *argv[]) {
 		}
 		fclose(fp);
 		status_no_cracked();
+	} else if (argc == 5 && strcmp(arg, "-b") == 0) {
+		puts("|> Mode: brute");
+		if (strcmp(arg2, "-a") == 0) 
+			printf("|> Algorithm: %s\n", algo);
+		char *hash = extract_file(fhash);
+		int ans = 0;
+		puts("|> Cracking...");
+		int position = 0;
+		while (!ans) {
+			char *word = brute(position);
+			char *result;
+			if (strcmp(algo, "md4") == 0)
+				result = convert_to_md4(word);
+			else if (strcmp(algo, "halfmd5") == 0) 
+				result = convert_to_halfmd5(word);
+			else if (strcmp(algo, "md5") == 0)
+				result = convert_to_md5(word);
+			else if (strcmp(algo, "sha1") == 0)
+				result = convert_to_sha1(word);
+			else if (strcmp(algo, "sha256") == 0)
+				result = convert_to_sha256(word);
+			else if (strcmp(algo, "sha512") == 0)
+				result = convert_to_sha512(word);
+			else if (strcmp(algo, "blake2s") == 0)
+				result = convert_to_blake2s(word);
+			else if (strcmp(algo, "blake2b") == 0) 
+				result = convert_to_blake2b(word);
+			ans = verify_string(result, hash);
+			free(result);
+			status_cracked(ans, word);
+		}
 	} else {
         help_menu(name);
     }
     puts("|> Finished");
 	return 0;
+}
+
+char *brute(int position) {
+	static unsigned char word[10];
+	char possible[] = "abcdefghijklmnopqrstuvwxyz";
+	int length = 3;
+	for (int i = 0; i < 26; i++) {
+		word[position] = possible[i];
+		brute(position + 1);
+		if (length == position) {
+			break;
+		}
+	}
+	printf("%s\n", word);
+	return word;
 }
 
 /*char *convert_to_md4(char *word) {
@@ -340,6 +390,7 @@ void help_menu(char *name) {
            "|> Example: %s hash.txt rockyou.txt\n"
 		   "\tOptions:\n"
 	   	   "\t\t-h --help help for VaporCrack\n"
+		   "\t\t-b --brute <hash_file>\n"
 	   	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n"
 		   "\t\t-a --algorithm <md5> | <sha1>\n", name, name);
 }
