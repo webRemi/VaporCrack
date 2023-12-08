@@ -40,7 +40,7 @@ void bold(); // set bold
 void reset(); // reset display effects
 
 int main(int argc, char *argv[]) {
-	printf(
+	puts(
     "  _                                                              \n"
     "- - _-                            ,- _~.                  ,,   \n"
     "  )-  )   _                      (' /|           _        ||   \n"
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     "              '                                                 \n"
     "                      	                                     \n"
     );
-    printf("|> Starting VaporCrack...\n");
+    puts("|> Starting VaporCrack...");
 	clock_t duration;
 	duration = start_timer();
     char *name = argv[0];
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
     char *fhash = argv[4];
     char *fword = argv[5];
     if (argc == 6 && strcmp(arg, "-d") == 0) {
-		printf("|> Mode: dictionnary\n");
+		puts("|> Mode: dictionnary");
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
 		char *hash = extract_file(fhash);
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 		if ((fp = fopen(fword, "r")) == NULL) {
 			fprintf(stderr, "Error opening file: %s\n", strerror(errno));
 		}
-		printf("|> Cracking...\n");
+		puts("|> Cracking...");
 		long long wn = 0;
 		while (!feof(fp)) {
 			wn++;
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
 	} else {
         help_menu(name);
     }
-    printf("|> Finished\n");
+    puts("|> Finished");
 	return 0;
 }
 
@@ -318,20 +318,20 @@ void status_cracked(int ans, char *word) {
         red();
         printf(" %s\n", word);
         reset();
-        printf("|                                         |\n");
-        printf("|>================CRACKED================<|\n");
-		printf("|> Finished\n");
+        puts("|                                         |");
+        puts("|>================CRACKED================<|");
+		puts("|> Finished");
 		exit(0);
 	}
 }
 
 void status_no_cracked() {
-	printf(
+	puts(
 		"\n|>================XXXXXXX================<|\n"
 		"|                                         |\n"
 		"|> NOT IN LIST\n"
 		"|                                         |\n"
-		"|>================XXXXXXX================<|\n"
+		"|>================XXXXXXX================<|"
 	);
 }
 
