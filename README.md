@@ -15,6 +15,12 @@
 | BLAKE2s-256 | `blake2s` |
 | BLAKE2b-512 | `blake2b` |
 
+### Supported modes
+| Mode | Command | Description |
+| --- | --- | --- |
+| Dictionnary | `-d` `--dictionnary` | This mode crack the hash using given wordlists |
+| Brute-Force | `-b` `--brute` | This mode crack the hash by crafting all possible words using incrementation technique |
+
 ### Compiling instructions
 ```bash
 gcc VaporCrack.c -lcrypto -o VaporCrack
