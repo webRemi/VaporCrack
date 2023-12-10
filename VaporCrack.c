@@ -20,7 +20,8 @@
 #define BLAKE2B_SIZE 64
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-char *brute(int position); // cook a potential words
+char *brute(int length, int position, char *current, char *algo, char *hash); // cook potential words
+char *choice(char *algo, char *word); // choose the right algo to convert
 char *convert_to_md4(char *word); // convert word to md4
 char *convert_to_halfmd5(char *word); // convert word to halfmd5
 char *convert_to_md5(char *word); // convert word to md5
@@ -82,24 +83,8 @@ int main(int argc, char *argv[]) {
 			fgets(word, SIZE, fp);
 			word[strcspn(word, "\n")] = '\0';
 			char *result;
-			if (strcmp(algo, "md4") == 0)
-				result = convert_to_md4(word);
-			else if (strcmp(algo, "halfmd5") == 0) 
-				result = convert_to_halfmd5(word);
-			else if (strcmp(algo, "md5") == 0)
-				result = convert_to_md5(word);
-			else if (strcmp(algo, "sha1") == 0)
-				result = convert_to_sha1(word);
-			else if (strcmp(algo, "sha256") == 0)
-				result = convert_to_sha256(word);
-			else if (strcmp(algo, "sha512") == 0)
-				result = convert_to_sha512(word);
-			else if (strcmp(algo, "blake2s") == 0)
-				result = convert_to_blake2s(word);
-			else if (strcmp(algo, "blake2b") == 0) 
-				result = convert_to_blake2b(word);
+			result = choice(algo, word);
 			int ans = verify_string(result, hash);
-			free(result);
 			status_cracked(ans, word);
 			printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
 			fflush(stdout);
@@ -111,13 +96,18 @@ int main(int argc, char *argv[]) {
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
 		char *hash = extract_file(fhash);
-		int ans = 0;
 		puts("|> Cracking...");
-		int position = 0;
+		int length = 0;
+		int ans = 0;
+		char current[8] = {'\0'};
 		while (!ans) {
-			char *word = brute(position);
-			char *result;
-			if (strcmp(algo, "md4") == 0)
+			brute(length, 0, current, algo, hash);
+			//result = choice(algo, current);
+			//printf("%s\n", result);
+			//printf("%s\n", current);
+			//int ans = verify_string(result, hash);
+			//status_cracked(ans, current);
+			/*if (strcmp(algo, "md4") == 0)
 				result = convert_to_md4(word);
 			else if (strcmp(algo, "halfmd5") == 0) 
 				result = convert_to_halfmd5(word);
@@ -134,8 +124,10 @@ int main(int argc, char *argv[]) {
 			else if (strcmp(algo, "blake2b") == 0) 
 				result = convert_to_blake2b(word);
 			ans = verify_string(result, hash);
+			//printf("%s\n", result);
 			free(result);
-			status_cracked(ans, word);
+			status_cracked(ans, result);*/
+			length++;
 		}
 	} else {
         help_menu(name);
@@ -144,19 +136,43 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-char *brute(int position) {
-	static unsigned char word[10];
-	char possible[] = "abcdefghijklmnopqrstuvwxyz";
-	int length = 3;
-	for (int i = 0; i < 26; i++) {
-		word[position] = possible[i];
-		brute(position + 1);
-		if (length == position) {
-			break;
-		}
+char *choice(char *algo, char *word) {
+	char *result;
+	if (strcmp(algo, "md4") == 0)
+		result = convert_to_md4(word);
+	else if (strcmp(algo, "halfmd5") == 0) 
+		result = convert_to_halfmd5(word);
+	else if (strcmp(algo, "md5") == 0)
+		result = convert_to_md5(word);
+	else if (strcmp(algo, "sha1") == 0)
+		result = convert_to_sha1(word);
+	else if (strcmp(algo, "sha256") == 0)
+		result = convert_to_sha256(word);
+	else if (strcmp(algo, "sha512") == 0)
+	 	result  = convert_to_sha512(word);
+	else if (strcmp(algo, "blake2s") == 0)
+		result = convert_to_blake2s(word);
+	else if (strcmp(algo, "blake2b") == 0) 
+		result = convert_to_blake2b(word);
+	return result;
+}
+
+char *brute(int length, int position, char *current, char *algo, char *hash) {
+	char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
+	if (position == length) {
+		//char *result = choice(algo, current);
+		char *result = convert_to_md5(current);
+		printf("%s\n", current);
+		printf("%s\n", result);
+		int ans = verify_string(result, hash);
+		printf("%d\n", ans);
+		status_cracked(ans, current);
+		return result;
 	}
-	printf("%s\n", word);
-	return word;
+	for (int i = 0; i < 26; i++) {
+		current[position] = alphabet[i];
+		brute(length, position + 1, current, algo, hash);
+	}
 }
 
 /*char *convert_to_md4(char *word) {
