@@ -102,31 +102,6 @@ int main(int argc, char *argv[]) {
 		char current[8] = {'\0'};
 		while (!ans) {
 			brute(length, 0, current, algo, hash);
-			//result = choice(algo, current);
-			//printf("%s\n", result);
-			//printf("%s\n", current);
-			//int ans = verify_string(result, hash);
-			//status_cracked(ans, current);
-			/*if (strcmp(algo, "md4") == 0)
-				result = convert_to_md4(word);
-			else if (strcmp(algo, "halfmd5") == 0) 
-				result = convert_to_halfmd5(word);
-			else if (strcmp(algo, "md5") == 0)
-				result = convert_to_md5(word);
-			else if (strcmp(algo, "sha1") == 0)
-				result = convert_to_sha1(word);
-			else if (strcmp(algo, "sha256") == 0)
-				result = convert_to_sha256(word);
-			else if (strcmp(algo, "sha512") == 0)
-				result = convert_to_sha512(word);
-			else if (strcmp(algo, "blake2s") == 0)
-				result = convert_to_blake2s(word);
-			else if (strcmp(algo, "blake2b") == 0) 
-				result = convert_to_blake2b(word);
-			ans = verify_string(result, hash);
-			//printf("%s\n", result);
-			free(result);
-			status_cracked(ans, result);*/
 			length++;
 		}
 	} else {
@@ -160,12 +135,8 @@ char *choice(char *algo, char *word) {
 char *brute(int length, int position, char *current, char *algo, char *hash) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
 	if (position == length) {
-		//char *result = choice(algo, current);
-		char *result = convert_to_md5(current);
-		printf("%s\n", current);
-		printf("%s\n", result);
+		char *result = choice(algo, current);
 		int ans = verify_string(result, hash);
-		printf("%d\n", ans);
 		status_cracked(ans, current);
 		return result;
 	}
