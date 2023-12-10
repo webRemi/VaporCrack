@@ -20,7 +20,7 @@
 #define BLAKE2B_SIZE 64
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-char *brute(int length, int position, char *current, char *algo, char *hash); // cook potential words
+char *brute(int length, int position, char *current, char *algo, char *hash, clock_t duration, long long wn); // cook potential words
 char *choice(char *algo, char *word); // choose the right algo to convert
 char *convert_to_md4(char *word); // convert word to md4
 char *convert_to_halfmd5(char *word); // convert word to halfmd5
@@ -62,6 +62,7 @@ int main(int argc, char *argv[]) {
 	char *arg2 = argv[2];
 	char *algo = argv[3];
 	char *fhash = argv[4];
+	char *hash = extract_file(fhash);
     if (argc == 6 && strcmp(arg, "-d") == 0) {
 		char *arg2 = argv[2];
 		char *algo = argv[3];
@@ -70,7 +71,6 @@ int main(int argc, char *argv[]) {
 		puts("|> Mode: dictionnary");
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
-		char *hash = extract_file(fhash);
 		FILE *fopen(), *fp;
 		char word[SIZE];
 		if ((fp = fopen(fword, "r")) == NULL) {
@@ -95,13 +95,13 @@ int main(int argc, char *argv[]) {
 		puts("|> Mode: brute");
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
-		char *hash = extract_file(fhash);
 		puts("|> Cracking...");
 		int length = 0;
 		int ans = 0;
 		char current[8] = {'\0'};
+		long long wn = 0;
 		while (!ans) {
-			brute(length, 0, current, algo, hash);
+			brute(length, 0, current, algo, hash, duration, wn);
 			length++;
 		}
 	} else {
@@ -132,17 +132,19 @@ char *choice(char *algo, char *word) {
 	return result;
 }
 
-char *brute(int length, int position, char *current, char *algo, char *hash) {
+char *brute(int length, int position, char *current, char *algo, char *hash, clock_t duration, long long wn) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
 	if (position == length) {
 		char *result = choice(algo, current);
 		int ans = verify_string(result, hash);
 		status_cracked(ans, current);
+		printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
+		fflush(stdout);
 		return result;
 	}
 	for (int i = 0; i < 26; i++) {
 		current[position] = alphabet[i];
-		brute(length, position + 1, current, algo, hash);
+		brute(length, position + 1, current, algo, hash, duration, wn);
 	}
 }
 
