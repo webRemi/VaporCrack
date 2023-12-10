@@ -18,10 +18,30 @@
 ### Supported modes
 | Mode | Command | Description |
 | --- | --- | --- |
+| Help | `-h` `--help` | This mode display the help menu |
 | Dictionnary | `-d` `--dictionnary` | This mode crack the hash using given wordlists |
 | Brute | `-b` `--brute` | This mode crack the hash by crafting all possible words |
+
+## Manual
 
 ### Compiling instructions
 ```bash
 gcc VaporCrack.c -lcrypto -o VaporCrack
 ```
+
+### Utilisation instructions
+```bash
+./VaporCrack -h
+```
+> Display help menu
+
+```bash
+./VaporCrack -d -a md5 <hash_file> <rockyou.txt>
+```
+
+> Crack the given hash using md5 algorightm, dictionnary mode and rockyou wordlist
+
+```bash
+./VaporCrack -b -a blake2s <hash_file>
+```
+> Crack the given hash using blake2s-256 algorithm and brute mode
