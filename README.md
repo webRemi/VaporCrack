@@ -19,7 +19,7 @@
 | Mode | Command | Description |
 | --- | --- | --- |
 | Dictionnary | `-d` `--dictionnary` | This mode crack the hash using given wordlists |
-| Brute-Force | `-b` `--brute` | This mode crack the hash by crafting all possible words using incrementation technique |
+| Brute | `-b` `--brute` | This mode crack the hash by crafting all possible words |
 
 ### Compiling instructions
 ```bash
