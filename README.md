@@ -3,6 +3,13 @@
 
 ## Hash Cracker
 
+### Supported modes
+| Mode | Command | Description |
+| --- | --- | --- |
+| Help | `-h` `--help` | This mode display the help menu |
+| Dictionnary | `-d` `--dictionnary` | This mode crack the hash using given wordlists |
+| Brute | `-b` `--brute` | This mode crack the hash by crafting all possible words |
+
 ### Supported algorithms
 | Algorithm | Comand | 
 | --- | --- |
@@ -14,13 +21,6 @@
 | SHA512 | `sha512` |
 | BLAKE2s-256 | `blake2s` |
 | BLAKE2b-512 | `blake2b` |
-
-### Supported modes
-| Mode | Command | Description |
-| --- | --- | --- |
-| Help | `-h` `--help` | This mode display the help menu |
-| Dictionnary | `-d` `--dictionnary` | This mode crack the hash using given wordlists |
-| Brute | `-b` `--brute` | This mode crack the hash by crafting all possible words |
 
 ## Manual
 
@@ -39,7 +39,7 @@ gcc VaporCrack.c -lcrypto -o VaporCrack
 ./VaporCrack -d -a md5 <hash_file> <rockyou.txt>
 ```
 
-> Crack the given hash using md5 algorightm, dictionnary mode and rockyou wordlist
+> Crack the given hash using md5 algorithm, dictionnary mode and rockyou wordlist
 
 ```bash
 ./VaporCrack -b -a blake2s <hash_file>
