@@ -21,6 +21,7 @@
 | SHA512 | `sha512` |
 | BLAKE2s-256 | `blake2s` |
 | BLAKE2b-512 | `blake2b` |
+| RIPEMD-160 | `ripemd160` |
 
 ## Manual
 

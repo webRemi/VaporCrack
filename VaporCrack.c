@@ -18,6 +18,7 @@
 #define SHA512_SIZE 64
 #define BLAKE2S_SIZE 32
 #define BLAKE2B_SIZE 64
+#define RIPEMD160_SIZE 20
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *brute(int length, int position, char *current, char *algo, char *hash, clock_t duration, long long wn); // cook potential words
@@ -30,6 +31,7 @@ char *convert_to_sha256(char *word); // convert word to sha256
 char *convert_to_sha512(char *word); //convert word to sha512
 char *convert_to_blake2s(char *word); // convert word to blake2s
 char *convert_to_blake2b(char *word); // convert word to blake2b
+char *convert_to_ripemd160(char *word); // convert word to ripemd160
 char *extract_file(char *fitem); // extract item from file
 int verify_string(char *result, char *hash); // compare converted word with hash
 long int start_timer(); // start timer
@@ -129,6 +131,8 @@ char *choice(char *algo, char *word) {
 		result = convert_to_blake2s(word);
 	else if (strcmp(algo, "blake2b") == 0) 
 		result = convert_to_blake2b(word);
+	else if (strcmp(algo, "ripemd160") == 0)
+		result = convert_to_ripemd160(word);
 	return result;
 }
 
@@ -313,6 +317,26 @@ char *convert_to_blake2b(char *word) {
 	for (int i = 0; i < BLAKE2B_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
+}
+
+char *convert_to_ripemd160(char *word) {
+	unsigned char digest[RIPEMD160_SIZE];
+	const EVP_MD *md = EVP_ripemd160();
+	EVP_MD_CTX *mdctx;
+	mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * RIPEMD160_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < RIPEMD160_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+
 }
 
 char *extract_file(char *fitem) {
