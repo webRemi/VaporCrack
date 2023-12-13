@@ -9,6 +9,7 @@
 #include <time.h>
 #include <openssl/evp.h>
 #include <openssl/md4.h>
+#include <openssl/whrlpool.h>
 #define SIZE 500
 #define MD4_SIZE 16
 #define HALFMD5_SIZE 8
@@ -19,6 +20,7 @@
 #define BLAKE2S_SIZE 32
 #define BLAKE2B_SIZE 64
 #define RIPEMD160_SIZE 20
+#define WHIRLPOOL_SIZE 64 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 char *brute(int length, int position, char *current, char *algo, char *hash, clock_t duration, long long wn); // cook potential words
@@ -32,6 +34,7 @@ char *convert_to_sha512(char *word); //convert word to sha512
 char *convert_to_blake2s(char *word); // convert word to blake2s
 char *convert_to_blake2b(char *word); // convert word to blake2b
 char *convert_to_ripemd160(char *word); // convert word to ripemd160
+char *convert_to_whirlpool(char *word); // convert word to whirlpool
 char *extract_file(char *fitem); // extract item from file
 int verify_string(char *result, char *hash); // compare converted word with hash
 long int start_timer(); // start timer
@@ -133,6 +136,8 @@ char *choice(char *algo, char *word) {
 		result = convert_to_blake2b(word);
 	else if (strcmp(algo, "ripemd160") == 0)
 		result = convert_to_ripemd160(word);
+	else if (strcmp(algo, "whirlpool") == 0)
+		result = convert_to_whirlpool(word);
 	return result;
 }
 
@@ -336,7 +341,43 @@ char *convert_to_ripemd160(char *word) {
 	for (int i = 0; i < RIPEMD160_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
+}
 
+/*char *convert_to_whirlpool(char *word) {
+	unsigned char digest[WHIRLPOOL_SIZE];
+	const EVP_MD *md = EVP_whirlpool();
+	EVP_MD_CTX *mdctx;
+	mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	puts("before update");
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	puts("after uppdate");
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * WHIRLPOOL_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < WHIRLPOOL_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+}*/
+
+char *convert_to_whirlpool(char *word) {
+	unsigned char digest[WHIRLPOOL_SIZE];
+	WHIRLPOOL_CTX ctx;
+	WHIRLPOOL_Init(&ctx);
+	WHIRLPOOL_Update(&ctx, word, strlen(word));
+	WHIRLPOOL_Final(digest, &ctx);
+	char *result = malloc(2 * WHIRLPOOL_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < WHIRLPOOL_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
 }
 
 char *extract_file(char *fitem) {
