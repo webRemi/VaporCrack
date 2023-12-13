@@ -2,6 +2,8 @@
 ![VaporCrack Logo](/assets/images/VaporCrack.png)
 
 ## Hash Cracker
+* 2 cracking modes
+* 10 hashes algorithms supported
 
 ### Supported modes
 | Mode | Command | Description |
@@ -22,6 +24,7 @@
 | BLAKE2s-256 | `blake2s` |
 | BLAKE2b-512 | `blake2b` |
 | RIPEMD-160 | `ripemd160` |
+| WHIRLPOOL | `whirlpool` |
 
 ## Manual
 
