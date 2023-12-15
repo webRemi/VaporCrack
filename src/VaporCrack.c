@@ -10,7 +10,10 @@
 #include <openssl/evp.h>
 #include <openssl/md4.h>
 #include <openssl/whrlpool.h>
-#include "help_menu.h"
+#include "help.h"
+#include "status.h"
+#include "color.h"
+#include "chrono.h"
 #define SIZE 500
 #define MD4_SIZE 16
 #define HALFMD5_SIZE 8
@@ -38,13 +41,6 @@ char *convert_to_ripemd160(char *word); // convert word to ripemd160
 char *convert_to_whirlpool(char *word); // convert word to whirlpool
 char *extract_file(char *fitem); // extract item from file
 int verify_string(char *result, char *hash); // compare converted word with hash
-long int start_timer(); // start timer
-double show_time(long int duration); // show time spent on cracking
-void status_cracked(int ans, char *word); // display cracked status
-void status_no_cracked(); // display no-cracked status
-void red(); // set red color
-void bold(); // set bold 
-void reset(); // reset display effects
 
 int main(int argc, char *argv[]) {
 	puts(
@@ -399,66 +395,4 @@ char *extract_file(char *fitem) {
 
 int verify_string(char *result, char *hash) {
 	return strcmp(result, hash) == 0;
-}
-
-long int start_timer() {
-	clock_t t;
-	t = 0;
-	return t;
-}
-
-double show_time(long int duration) {
-	duration = clock() - duration;
-	double actual_time = ((double)duration)/CLOCKS_PER_SEC;;
-	return actual_time;
-}
-
-void status_cracked(int ans, char *word) {
-	if (ans) {
-        printf(
-            "\r"
-            "|>================CRACKED================<|\n"
-            "|                                         |\n"
-            "|>");
-		bold();
-        red();
-        printf(" %s\n", word);
-        reset();
-        puts("|                                         |");
-        puts("|>================CRACKED================<|");
-		puts("|> Finished");
-		exit(0);
-	}
-}
-
-void status_no_cracked() {
-	puts(
-		"\n|>================XXXXXXX================<|\n"
-		"|                                         |\n"
-		"|> NOT IN LIST\n"
-		"|                                         |\n"
-		"|>================XXXXXXX================<|"
-	);
-}
-
-/*void help_menu(char *name) {
-    printf("|> Usage: %s <hash> <wordlist>\n"
-           "|> Example: %s hash.txt rockyou.txt\n"
-		   "\tOptions:\n"
-	   	   "\t\t-h --help help for VaporCrack\n"
-		   "\t\t-b --brute <hash_file>\n"
-	   	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n"
-		   "\t\t-a --algorithm <md5> | <sha1>\n", name, name);
-}*/
-
-void red() {
-	printf("\033[1;31m");
-}
-
-void reset() {
-	printf("\033[0m");
-}
-
-void bold() {
-	printf("\e[1m");
 }

@@ -1,5 +1,5 @@
-#ifndef HELP_MENU_H
-#define HELP_MENU_H
+#ifndef HELP_H
+#define HELP_H
 
 extern void help_menu(char *name);
 

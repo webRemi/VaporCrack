@@ -1,7 +1,7 @@
 /* Display help menu */
 
 #include <stdio.h>
-#include "help_menu.h"
+#include "help.h"
 
 void help_menu(char *name) {
     printf("|> Usage: %s <hash> <wordlist>\n"
