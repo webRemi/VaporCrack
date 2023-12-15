@@ -29,8 +29,9 @@
 ## Manual
 
 ### Compiling instructions
+Navigate to the project directory and run the compilation script:
 ```bash
-gcc VaporCrack.c -lcrypto -o VaporCrack
+./compile.sh
 ```
 
 ### Utilisation instructions

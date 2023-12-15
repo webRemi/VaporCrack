@@ -10,6 +10,7 @@
 #include <openssl/evp.h>
 #include <openssl/md4.h>
 #include <openssl/whrlpool.h>
+#include "help_menu.h"
 #define SIZE 500
 #define MD4_SIZE 16
 #define HALFMD5_SIZE 8
@@ -41,7 +42,6 @@ long int start_timer(); // start timer
 double show_time(long int duration); // show time spent on cracking
 void status_cracked(int ans, char *word); // display cracked status
 void status_no_cracked(); // display no-cracked status
-void help_menu(char *help); // display help menu
 void red(); // set red color
 void bold(); // set bold 
 void reset(); // reset display effects
@@ -67,12 +67,13 @@ int main(int argc, char *argv[]) {
 	char *arg2 = argv[2];
 	char *algo = argv[3];
 	char *fhash = argv[4];
-	char *hash = extract_file(fhash);
     if (argc == 6 && strcmp(arg, "-d") == 0) {
+		puts("Entering in first block");
 		char *arg2 = argv[2];
 		char *algo = argv[3];
 		char *fhash = argv[4];
 		char *fword = argv[5];
+		char *hash = extract_file(fhash);
 		puts("|> Mode: dictionnary");
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
@@ -97,6 +98,7 @@ int main(int argc, char *argv[]) {
 		fclose(fp);
 		status_no_cracked();
 	} else if (argc == 5 && strcmp(arg, "-b") == 0) {
+		char *hash = extract_file(fhash);
 		puts("|> Mode: brute");
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
@@ -439,7 +441,7 @@ void status_no_cracked() {
 	);
 }
 
-void help_menu(char *name) {
+/*void help_menu(char *name) {
     printf("|> Usage: %s <hash> <wordlist>\n"
            "|> Example: %s hash.txt rockyou.txt\n"
 		   "\tOptions:\n"
@@ -447,7 +449,7 @@ void help_menu(char *name) {
 		   "\t\t-b --brute <hash_file>\n"
 	   	   "\t\t-d --dictionnary <hash_file> <wordlist_file>\n"
 		   "\t\t-a --algorithm <md5> | <sha1>\n", name, name);
-}
+}*/
 
 void red() {
 	printf("\033[1;31m");
