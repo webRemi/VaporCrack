@@ -1,20 +1,12 @@
-/*|-----------------------|*/
-/*|> VaporCrack.c ~ 4$X  <|*/
-/*|-----------------------|*/
+/* convert word to hash */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <time.h>
 #include <openssl/evp.h>
 #include <openssl/md4.h>
 #include <openssl/whrlpool.h>
-#include "help.h"
-#include "status.h"
-#include "color.h"
-#include "chrono.h"
-#define SIZE 500
+#include "converter.h"
 #define MD4_SIZE 16
 #define HALFMD5_SIZE 8
 #define MD5_SIZE 16
@@ -26,134 +18,6 @@
 #define RIPEMD160_SIZE 20
 #define WHIRLPOOL_SIZE 64 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
-char *brute(int length, int position, char *current, char *algo, char *hash, clock_t duration, long long wn); // cook potential words
-char *choice(char *algo, char *word); // choose the right algo to convert
-char *convert_to_md4(char *word); // convert word to md4
-char *convert_to_halfmd5(char *word); // convert word to halfmd5
-char *convert_to_md5(char *word); // convert word to md5
-char *convert_to_sha1(char *word); // convert word to sha1
-char *convert_to_sha256(char *word); // convert word to sha256
-char *convert_to_sha512(char *word); //convert word to sha512
-char *convert_to_blake2s(char *word); // convert word to blake2s
-char *convert_to_blake2b(char *word); // convert word to blake2b
-char *convert_to_ripemd160(char *word); // convert word to ripemd160
-char *convert_to_whirlpool(char *word); // convert word to whirlpool
-char *extract_file(char *fitem); // extract item from file
-int verify_string(char *result, char *hash); // compare converted word with hash
-
-int main(int argc, char *argv[]) {
-	puts(
-    "  _                                                              \n"
-    "- - _-                            ,- _~.                  ,,   \n"
-    "  )-  )   _                      (' /|           _        ||   \n"
-    "  )___)  < \\, -_-_   /'\\\\ ,._-_ ((  ||   ,._-_  < \\,  _-_ ||/\\ \n"
-    " ~)___)  /-|| || \\\\ || ||  ||   ((  ||    ||    /-|| ||   ||_< \n"
-    "  )  )  (( || || || || ||  ||    ( / |    ||   (( || ||   || | \n"
-    " /-_/    \\/\\\\ ||-'  \\\\,/   \\\\,    -____-  \\\\,   \\/\\\\ \\\\,/ \\\\,\\\n"
-    "              |/                                                 \n"
-    "              '                                                 \n"
-    "                      	                                     \n"
-    );
-    puts("|> Starting VaporCrack...");
-	clock_t duration;
-	duration = start_timer();
-    char *name = argv[0];
-    char *arg = argv[1];
-	char *arg2 = argv[2];
-	char *algo = argv[3];
-	char *fhash = argv[4];
-    if (argc == 6 && strcmp(arg, "-d") == 0) {
-		puts("Entering in first block");
-		char *arg2 = argv[2];
-		char *algo = argv[3];
-		char *fhash = argv[4];
-		char *fword = argv[5];
-		char *hash = extract_file(fhash);
-		puts("|> Mode: dictionnary");
-		if (strcmp(arg2, "-a") == 0) 
-			printf("|> Algorithm: %s\n", algo);
-		FILE *fopen(), *fp;
-		char word[SIZE];
-		if ((fp = fopen(fword, "r")) == NULL) {
-			fprintf(stderr, "Error opening file: %s\n", strerror(errno));
-		}
-		puts("|> Cracking...");
-		long long wn = 0;
-		while (!feof(fp)) {
-			wn++;
-			fgets(word, SIZE, fp);
-			word[strcspn(word, "\n")] = '\0';
-			char *result;
-			result = choice(algo, word);
-			int ans = verify_string(result, hash);
-			status_cracked(ans, word);
-			printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
-			fflush(stdout);
-		}
-		fclose(fp);
-		status_no_cracked();
-	} else if (argc == 5 && strcmp(arg, "-b") == 0) {
-		char *hash = extract_file(fhash);
-		puts("|> Mode: brute");
-		if (strcmp(arg2, "-a") == 0) 
-			printf("|> Algorithm: %s\n", algo);
-		puts("|> Cracking...");
-		int length = 0;
-		int ans = 0;
-		char current[8] = {'\0'};
-		long long wn = 0;
-		while (!ans) {
-			brute(length, 0, current, algo, hash, duration, wn);
-			length++;
-		}
-	} else {
-        help_menu(name);
-    }
-    puts("|> Finished");
-	return 0;
-}
-
-char *choice(char *algo, char *word) {
-	char *result;
-	if (strcmp(algo, "md4") == 0)
-		result = convert_to_md4(word);
-	else if (strcmp(algo, "halfmd5") == 0) 
-		result = convert_to_halfmd5(word);
-	else if (strcmp(algo, "md5") == 0)
-		result = convert_to_md5(word);
-	else if (strcmp(algo, "sha1") == 0)
-		result = convert_to_sha1(word);
-	else if (strcmp(algo, "sha256") == 0)
-		result = convert_to_sha256(word);
-	else if (strcmp(algo, "sha512") == 0)
-	 	result  = convert_to_sha512(word);
-	else if (strcmp(algo, "blake2s") == 0)
-		result = convert_to_blake2s(word);
-	else if (strcmp(algo, "blake2b") == 0) 
-		result = convert_to_blake2b(word);
-	else if (strcmp(algo, "ripemd160") == 0)
-		result = convert_to_ripemd160(word);
-	else if (strcmp(algo, "whirlpool") == 0)
-		result = convert_to_whirlpool(word);
-	return result;
-}
-
-char *brute(int length, int position, char *current, char *algo, char *hash, clock_t duration, long long wn) {
-	char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
-	if (position == length) {
-		char *result = choice(algo, current);
-		int ans = verify_string(result, hash);
-		status_cracked(ans, current);
-		printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
-		fflush(stdout);
-		return result;
-	}
-	for (int i = 0; i < 26; i++) {
-		current[position] = alphabet[i];
-		brute(length, position + 1, current, algo, hash, duration, wn);
-	}
-}
 
 /*char *convert_to_md4(char *word) {
 	unsigned char digest[MD4_SIZE];
@@ -172,7 +36,6 @@ char *brute(int length, int position, char *current, char *algo, char *hash, clo
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }*/
-
 
 char *convert_to_md4(char *word) {
 	unsigned char digest[MD4_SIZE];
@@ -204,7 +67,7 @@ char *convert_to_halfmd5(char *word) {
 		fprintf(stderr, "Error allocating memory\n");
 		exit(1);
 	}
-	for (int i = 0; i < HALFMD5_SIZE; i++) 
+	for (int i = 0; i < HALFMD5_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }
@@ -259,7 +122,7 @@ char *convert_to_sha256(char *word) {
 	if (result == NULL) {
 		fprintf(stderr, "Error allocating memory\n");
 		exit(1);
-	}
+ 	}
 	for (int i = 0; i < SHA256_SIZE; i++) 
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
@@ -376,23 +239,4 @@ char *convert_to_whirlpool(char *word) {
 	for (int i = 0; i < WHIRLPOOL_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
-}
-
-char *extract_file(char *fitem) {
-    FILE *fopen(), *fp;
-    static char item[SIZE];
-    if ((fp = fopen(fitem, "r")) == NULL) {
-		fprintf(stderr, "Error opening file: %s\n", strerror(errno));
-		exit(1);
-    }
-    while (!feof(fp)) {
-        fgets(item, SIZE, fp);
-    }
-    fclose(fp);
-		item[strcspn(item, "\n")] = '\0';
-    return item;
-}
-
-int verify_string(char *result, char *hash) {
-	return strcmp(result, hash) == 0;
 }
