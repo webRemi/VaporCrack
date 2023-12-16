@@ -17,6 +17,7 @@
 #define BLAKE2B_SIZE 64
 #define RIPEMD160_SIZE 20
 #define WHIRLPOOL_SIZE 64 
+#define SM3_SIZE 32
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 /*char *convert_to_md4(char *word) {
@@ -237,6 +238,25 @@ char *convert_to_whirlpool(char *word) {
 		exit(1);
 	}
 	for (int i = 0; i < WHIRLPOOL_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+}
+
+char *convert_to_sm3(char *word) {
+	unsigned char digest[SM3_SIZE];
+	const EVP_MD *md = EVP_sm3();
+	EVP_MD_CTX *mdctx;
+	mdctx = EVP_MD_CTX_new();
+	EVP_DigestInit_ex(mdctx, md, NULL);
+	EVP_DigestUpdate(mdctx, word, strlen(word));
+	EVP_DigestFinal(mdctx, digest, NULL);
+	EVP_MD_CTX_free(mdctx);
+	char *result = malloc(2 * SM3_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < SM3_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }

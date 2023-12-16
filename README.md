@@ -3,7 +3,7 @@
 
 ## Hash Cracker
 * 2 cracking modes
-* 10 hashes algorithms supported
+* More than 10 hashes algorithms supported
 
 ### Supported modes
 | Mode | Command | Description |
@@ -25,7 +25,7 @@
 | BLAKE2b-512 | `blake2b` |
 | RIPEMD-160 | `ripemd160` |
 | WHIRLPOOL | `whirlpool` |
-
+| SM3 | `sm3` |
 ## Manual
 
 ### Compiling instructions
