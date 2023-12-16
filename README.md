@@ -29,9 +29,15 @@
 ## Manual
 
 ### Compiling instructions
-Navigate to the project directory and run the compilation script:
+Navigate to the project directory and run:
 ```bash
-./compile.sh
+make
+```
+
+### Installation instructions
+Navigate to the project directory and run:
+```bash
+make install
 ```
 
 ### Utilisation instructions
