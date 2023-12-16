@@ -42,17 +42,17 @@ make install
 
 ### Utilisation instructions
 ```bash
-./VaporCrack -h
+VaporCrack -h
 ```
 > Display help menu
 
 ```bash
-./VaporCrack -d -a md5 <hash_file> <rockyou.txt>
+VaporCrack -d -a md5 <hash_file> <rockyou.txt>
 ```
 
 > Crack the given hash using md5 algorithm, dictionnary mode and rockyou wordlist
 
 ```bash
-./VaporCrack -b -a blake2s <hash_file>
+VaporCrack -b -a blake2s <hash_file>
 ```
 > Crack the given hash using blake2s-256 algorithm and brute mode
