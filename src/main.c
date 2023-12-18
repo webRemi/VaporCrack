@@ -16,6 +16,7 @@
 #include "extract.h"
 #include "brute.h"
 #include "verify.h"
+#include "identify.h"
 #define SIZE 500
 
 int main(int argc, char *argv[]) {
@@ -40,7 +41,6 @@ int main(int argc, char *argv[]) {
 	char *algo = argv[3];
 	char *fhash = argv[4];
     if (argc == 6 && strcmp(arg, "-d") == 0) {
-		puts("Entering in first block");
 		char *arg2 = argv[2];
 		char *algo = argv[3];
 		char *fhash = argv[4];
@@ -83,6 +83,12 @@ int main(int argc, char *argv[]) {
 			brute(length, 0, current, algo, hash, duration, wn);
 			length++;
 		}
+	} else if (argc == 3 && strcmp(arg, "-i") == 0) {
+		char *fhash = argv[2];
+		char *hash = extract_file(fhash);
+		puts("|> Mode identify");
+		puts("|> Analyzing...");
+		identify(hash);
 	} else {
         help_menu(name);
     }

@@ -2,6 +2,7 @@
 ![VaporCrack Logo](/assets/images/VaporCrack.png)
 
 ## Hash Cracker
+* 1 analyze mode
 * 2 cracking modes
 * More than 10 hashes algorithms supported
 
@@ -9,6 +10,7 @@
 | Mode | Command | Description |
 | --- | --- | --- |
 | Help | `-h` `--help` | This mode display the help menu |
+| Identify | `-i` `--identify` | This mode identify possible algorithm used by hash |
 | Dictionnary | `-d` `--dictionnary` | This mode crack the hash using given wordlists |
 | Brute | `-b` `--brute` | This mode crack the hash by crafting all possible words |
 
@@ -45,6 +47,11 @@ make install
 VaporCrack -h
 ```
 > Display help menu
+
+```bash
+VaporCrack -i <hash_file>
+```
+> Identify possible algorithms used by hash
 
 ```bash
 VaporCrack -d -a md5 <hash_file> <rockyou.txt>
