@@ -37,9 +37,6 @@ int main(int argc, char *argv[]) {
 	duration = start_timer();
     char *name = argv[0];
     char *arg = argv[1];
-	char *arg2 = argv[2];
-	char *algo = argv[3];
-	char *fhash = argv[4];
     if (argc == 6 && strcmp(arg, "-d") == 0) {
 		char *arg2 = argv[2];
 		char *algo = argv[3];
@@ -69,18 +66,23 @@ int main(int argc, char *argv[]) {
 		}
 		fclose(fp);
 		status_no_cracked();
-	} else if (argc == 5 && strcmp(arg, "-b") == 0) {
+	} else if (argc == 6 && strcmp(arg, "-b") == 0) {
+		char *arg2 = argv[2];
+		char *algo = argv[3];
+		char *fhash = argv[4];
+		char *cook = argv[5];
 		char *hash = extract_file(fhash);
 		puts("|> Mode: brute");
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
+		printf("|> Cook: %s\n", cook);
 		puts("|> Cracking...");
 		int length = 0;
 		int ans = 0;
 		char current[8] = {'\0'};
 		long long wn = 0;
 		while (!ans) {
-			brute(length, 0, current, algo, hash, duration, wn);
+			brute(length, 0, current, algo, hash, duration, wn, cook);
 			length++;
 		}
 	} else if (argc == 3 && strcmp(arg, "-i") == 0) {

@@ -14,6 +14,15 @@
 | Dictionnary | `-d` `--dictionnary` | This mode crack the hash using given wordlists |
 | Brute | `-b` `--brute` | This mode crack the hash by crafting all possible words |
 
+### Supported cooks
+| Cook | Command | Description |
+| --- | --- | --- |
+| Lowercase | lower | Cook all possible lower case combinations |
+| Uppercase | upper | Cook all possible upper case combinations |
+| Number | number | Cook all possible number combinations |
+| Special | special | Cook all possible special combinations |
+| Full | full | Cook ALL possible combinations |
+
 ### Supported algorithms
 | Algorithm | Comand | 
 | --- | --- |
@@ -56,10 +65,15 @@ VaporCrack -i <hash_file>
 ```bash
 VaporCrack -d -a md5 <hash_file> <rockyou.txt>
 ```
-
 > Crack the given hash using md5 algorithm, dictionnary mode and rockyou wordlist
 
 ```bash
-VaporCrack -b -a blake2s <hash_file>
+VaporCrack -b -a blake2s <hash_file> full
 ```
-> Crack the given hash using blake2s-256 algorithm and brute mode
+> Crack the given hash using blake2s-256 algorithm, brute mode and full cook
+> Example: P@ssw0rd!
+```bash
+VaporCrack -b -a sha1 <hash_file> number
+```
+> Crack the given hash using sha1 algorithm, brute mode and number cook
+> Example: 15684
