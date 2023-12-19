@@ -11,7 +11,7 @@
 | --- | --- | --- |
 | Help | `-h` `--help` | This mode display the help menu |
 | Identify | `-i` `--identify` | This mode identify possible algorithm used by hash |
-| Dictionnary | `-d` `--dictionnary` | This mode crack the hash using given wordlists |
+| Dictionary | `-d` `--dictionary` | This mode crack the hash using given wordlists |
 | Brute | `-b` `--brute` | This mode crack the hash by crafting all possible words |
 
 ### Supported cooks
@@ -65,15 +65,17 @@ VaporCrack -i <hash_file>
 ```bash
 VaporCrack -d -a md5 <hash_file> <rockyou.txt>
 ```
-> Crack the given hash using md5 algorithm, dictionnary mode and rockyou wordlist
+> Crack the given hash using md5 algorithm, dictionary mode and rockyou wordlist
 
 ```bash
 VaporCrack -b -a blake2s <hash_file> full
 ```
 > Crack the given hash using blake2s-256 algorithm, brute mode and full cook
+
 > Example: P@ssw0rd!
 ```bash
 VaporCrack -b -a sha1 <hash_file> number
 ```
 > Crack the given hash using sha1 algorithm, brute mode and number cook
+
 > Example: 15684
