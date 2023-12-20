@@ -37,6 +37,7 @@
 | RIPEMD-160 | `ripemd160` |
 | WHIRLPOOL | `whirlpool` |
 | SM3 | `sm3` |
+| NTLM | `ntlm` | 
 ## Manual
 
 ### Compiling instructions

@@ -17,6 +17,7 @@ char *choice(char *algo, char *word) {
 	else if (strcmp(algo, "ripemd160") == 0) result = convert_to_ripemd160(word);
 	else if (strcmp(algo, "whirlpool") == 0) result = convert_to_whirlpool(word);
 	else if (strcmp(algo, "sm3") == 0) result = convert_to_sm3(word);
+	else if (strcmp(algo, "ntlm") == 0) result = convert_to_ntlm(word);
 	return result;
 }
 

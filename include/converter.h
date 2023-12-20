@@ -12,5 +12,6 @@ extern char *convert_to_blake2b(char *word);
 extern char *convert_to_ripemd160(char *word); 
 extern char *convert_to_whirlpool(char *word); 
 extern char *convert_to_sm3(char *word);
+extern char *convert_to_ntlm(char *word);
 
 #endif

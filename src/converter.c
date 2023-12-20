@@ -7,6 +7,7 @@
 #include <openssl/md4.h>
 #include <openssl/whrlpool.h>
 #include "converter.h"
+#define SIZE 100
 #define MD4_SIZE 16
 #define HALFMD5_SIZE 8
 #define MD5_SIZE 16
@@ -257,6 +258,33 @@ char *convert_to_sm3(char *word) {
 		exit(1);
 	}
 	for (int i = 0; i < SM3_SIZE; i++)
+		sprintf(result + 2 * i, "%02x", digest[i]);
+	return result;
+}
+
+char *convert_to_ntlm(char *word) {
+	unsigned char *utf16le = malloc(2 * strlen(word) + 1);
+	if (utf16le == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	int i = 0, j = 0;
+	while(word[i] != '\0') {
+		utf16le[j++] = word[i++];
+		utf16le[j++] = 0;
+	}
+	utf16le[j] = 0;
+	unsigned char digest[MD4_SIZE];
+	MD4_CTX ctx;
+	MD4_Init(&ctx);
+	MD4_Update(&ctx, utf16le, j);
+	MD4_Final(digest, &ctx);
+	char *result = malloc(2 * MD4_SIZE + 1);
+	if (result == NULL) {
+		fprintf(stderr, "Error allocating memory\n");
+		exit(1);
+	}
+	for (int i = 0; i < MD4_SIZE; i++)
 		sprintf(result + 2 * i, "%02x", digest[i]);
 	return result;
 }
