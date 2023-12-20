@@ -7,7 +7,7 @@
 void identify(char *hash) {
 
 	struct hash_points {
-    	int md4, halfmd5, md5, sha1, sha256, sha512, blake2s, blake2b, ripemd160, whirlpool, sm3;
+    	int md4, halfmd5, md5, sha1, sha256, sha512, blake2s, blake2b, ripemd160, whirlpool, sm3, ntlm;
 	};
 
 	struct hash_points points = {0};
@@ -22,6 +22,7 @@ void identify(char *hash) {
 		case 32:
 			points.md4++;
 			points.md5++;
+			points.ntlm++;
 			break;
 		case 40:
 			points.sha1++;
@@ -40,6 +41,7 @@ void identify(char *hash) {
 	}
 	if (ptr->md4 >= 1) puts("|=> md4");
 	if (ptr->md5 >= 1) puts("|=> md5");
+	if (ptr->ntlm >= 1) puts("|=> ntlm");
 	if (ptr->halfmd5 >=1) puts("|=> halfmd5");
 	if (ptr->sha1 >= 1) puts("|=> sha1");
 	if (ptr->ripemd160 >= 1) puts("|=> ripemd160");
