@@ -34,8 +34,9 @@ char *brute(int length, int position, char *current, char *algo, char *hash, clo
 		char *result = choice(algo, current);
 		int ans = verify_string(result, hash);
 		status_cracked(ans, current);
-		printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
-		fflush(stdout);
+		printf("%s\n", current);
+		//printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
+		//fflush(stdout);
 		return result;
 	}
 

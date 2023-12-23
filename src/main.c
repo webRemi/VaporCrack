@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 		char *fhash = argv[4];
 		char *fword = argv[5];
 		char *hash = extract_file(fhash);
-		puts("|> Mode: dictionnary");
+		puts("|> Mode: dictionary");
 		if (strcmp(arg2, "-a") == 0) 
 			printf("|> Algorithm: %s\n", algo);
 		FILE *fopen(), *fp;
@@ -66,7 +66,47 @@ int main(int argc, char *argv[]) {
 		}
 		fclose(fp);
 		status_no_cracked();
-	} else if (argc == 6 && strcmp(arg, "-b") == 0) {
+	} else if (argc == 7 && strcmp(arg, "-c") == 0) {
+		char *arg2 = argv[2];
+		char *algo = argv[3];
+		char *fhash = argv[4];
+		char *fword = argv[5];
+		char *fword2 = argv[6];
+		char *hash = extract_file(fhash);
+		puts("|> Mode: combinator");
+		if (strcmp(arg2, "-a") == 0) 
+			printf("|> Algorithm: %s\n", algo);
+		FILE *fopen(), *fp, *fp2;
+		char word[SIZE];
+		if ((fp = fopen(fword, "r")) == NULL) {
+			fprintf(stderr, "Error opening file: %s\n", strerror(errno));
+		}
+		puts("|> Cracking...");
+		long long wn = 0;
+		while (fgets(word, SIZE, fp)) {
+			word[strcspn(word, "\n")] = '\0';
+			char word2[SIZE];
+			if ((fp2 = fopen(fword2, "r")) == NULL) {
+				fprintf(stderr, "Error opening file: %s\n", strerror(errno));
+			}
+			while (fgets(word2, SIZE, fp2)) {
+				wn++;
+				word2[strcspn(word2, "\n")] = '\0';
+				char word_combined[SIZE];
+				strcpy(word_combined, word);
+            	strcat(word_combined, word2);
+				char *result;
+				result = choice(algo, word_combined);
+				int ans = verify_string(result, hash);
+				status_cracked(ans, word_combined);
+				printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
+				fflush(stdout);
+			}
+			fclose(fp2);
+		}
+		fclose(fp);
+	} 
+	else if (argc == 6 && strcmp(arg, "-b") == 0) {
 		char *arg2 = argv[2];
 		char *algo = argv[3];
 		char *fhash = argv[4];

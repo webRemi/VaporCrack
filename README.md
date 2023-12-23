@@ -3,7 +3,7 @@
 
 ## Hash Cracker
 * 1 analyze mode
-* 2 cracking modes
+* 3 cracking modes
 * More than 10 hashes algorithms supported
 
 ### Supported modes
@@ -13,6 +13,7 @@
 | Identify | `-i` `--identify` | This mode identify possible algorithm used by hash |
 | Dictionary | `-d` `--dictionary` | This mode crack the hash using given wordlists |
 | Brute | `-b` `--brute` | This mode crack the hash by crafting all possible words |
+| Combinatory | `-c` `--combinatory` | This mode crack the hash by using combinated wordlists |
 
 ### Supported cooks
 | Cook | Command | Description |
@@ -80,3 +81,17 @@ VaporCrack -b -a sha1 <hash_file> number
 > Crack the given hash using sha1 algorithm, brute mode and number cook
 
 > Example: 15684
+
+```bash
+VaporCrack -c -a ntlm <hash_file> <rockyou.txt> <rockyou.txt>
+```
+> Crack the given hash using ntlm algorithm, combinator mode and two rockyou lists
+
+> Example: iloveyousunshine!!
+
+```bash
+VaporCrack -c -a md4 <hash_file> <season.txt> <year.txt>
+```
+> Crack the given hash using md4 algorithm, combinator mode and two different lists
+
+> Example: Summer2023

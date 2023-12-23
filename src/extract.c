@@ -14,11 +14,10 @@ char *extract_file(char *fitem) {
 		fprintf(stderr, "Error opening file: %s\n", strerror(errno));
 		exit(1);
     }
-    while (!feof(fp)) {
-        fgets(item, SIZE, fp);
-    }
-    fclose(fp);
+	while (!feof(fp)) {
+    	fgets(item, SIZE, fp);
+	}
+	fclose(fp);
 		item[strcspn(item, "\n")] = '\0';
     return item;
 }
-
