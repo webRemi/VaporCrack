@@ -11,5 +11,6 @@ void help_menu(char *name) {
 		  "\t\t-i --identify <hash_file>\n"
 		  "\t\t-b --brute <hash_file> <cook_mode>\n"
 	  	  "\t\t-d --dictionnary <hash_file> <wordlist_file>\n"
+		  "\t\t-c --combinatory <hash_file> <wordlist_file_1> <wordlist_file_2>\n"
 		  "\t\t-a --algorithm <md5> | <sha1>\n", name, name);
 }
