@@ -35,52 +35,56 @@ int main(int argc, char *argv[]) {
     "                      	                                     \n"
     );
     puts("|> Starting VaporCrack...");
-	clock_t duration;
-	duration = start_timer();
-    char *name = argv[0];
+	clock_t duration = start_timer();
+	char *name = argv[0];
     char *arg = argv[1];
+	char *arg2 = argv[2];
     if (argc == 6 && strcmp(arg, "-d") == 0) {
-		char *arg2 = argv[2];
+		unsigned int mark = 1;
+		char *mode = "dictionary";
 		char *algo = argv[3];
 		char *fhash = argv[4];
 		char *fword = argv[5];
 		char *hash = extract_file(fhash);
-		puts("|> Mode: dictionary");
+		printf("|> Mode: %s\n", mode);
 		printf("|> Algorithm: %s\n", algo);
 		puts("|> Cracking...");
 		dictionary(arg2, algo, fhash, fword, hash, duration);
 	} else if (argc == 7 && strcmp(arg, "-c") == 0) {
-		char *arg2 = argv[2];
+		unsigned int mark = 1;
+		char *mode = "combinator";
 		char *algo = argv[3];
 		char *fhash = argv[4];
 		char *fword = argv[5];
 		char *fword2 = argv[6];
 		char *hash = extract_file(fhash);
-		puts("|> Mode: combinator");
+		printf("|> Mode: %s\n", mode);
 		printf("|> Algorithm: %s\n", algo);
 		puts("|> Cracking...");
 		combinator(arg2, algo, fhash, fword, fword2, hash, duration);
-	} 
-	else if (argc == 6 && strcmp(arg, "-b") == 0) {
-		char *arg2 = argv[2];
+	} else if (argc == 6 && strcmp(arg, "-b") == 0) {
+		unsigned int mark = 2;
+		char *mode = "brute";
 		char *algo = argv[3];
 		char *fhash = argv[4];
 		char *cook = argv[5];
 		char *hash = extract_file(fhash);
-		puts("|> Mode: brute");
+		printf("|> Mode: %s\n", mode);
 		printf("|> Algorithm: %s\n", algo);
 		printf("|> Cook: %s\n", cook);
 		puts("|> Cracking...");
 		cooking(arg2, algo, fhash, cook, hash, duration);
 	} else if (argc == 3 && strcmp(arg, "-i") == 0) {
+		unsigned int mark = 3;
+		char *mode = "identify";
 		char *fhash = argv[2];
 		char *hash = extract_file(fhash);
-		puts("|> Mode identify");
+		printf("|> Mode: %s\n", mode);
 		puts("|> Analyzing...");
 		identify(hash);
 	} else {
-        help_menu(name);
-    }
+		help_menu(name);
+	}
     puts("|> Finished");
 	return 0;
 }
