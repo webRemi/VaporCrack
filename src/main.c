@@ -17,6 +17,7 @@
 #include "brute.h"
 #include "verify.h"
 #include "identify.h"
+#include "cooking.h"
 #define SIZE 500
 
 int main(int argc, char *argv[]) {
@@ -113,18 +114,10 @@ int main(int argc, char *argv[]) {
 		char *cook = argv[5];
 		char *hash = extract_file(fhash);
 		puts("|> Mode: brute");
-		if (strcmp(arg2, "-a") == 0) 
-			printf("|> Algorithm: %s\n", algo);
+		printf("|> Algorithm: %s\n", algo);
 		printf("|> Cook: %s\n", cook);
 		puts("|> Cracking...");
-		int length = 0;
-		int ans = 0;
-		char current[8] = {'\0'};
-		long long wn = 0;
-		while (!ans) {
-			brute(length, 0, current, algo, hash, duration, wn, cook);
-			length++;
-		}
+		cooking(arg2, algo, fhash, cook, hash, duration);
 	} else if (argc == 3 && strcmp(arg, "-i") == 0) {
 		char *fhash = argv[2];
 		char *hash = extract_file(fhash);
