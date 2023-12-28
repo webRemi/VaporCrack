@@ -19,7 +19,7 @@
 #include "identify.h"
 #include "cooking.h"
 #include "combinator.h"
-#define SIZE 500
+#include "dictionary.h"
 
 int main(int argc, char *argv[]) {
 	puts(
@@ -47,26 +47,8 @@ int main(int argc, char *argv[]) {
 		char *hash = extract_file(fhash);
 		puts("|> Mode: dictionary");
 		printf("|> Algorithm: %s\n", algo);
-		FILE *fopen(), *fp;
-		char word[SIZE];
-		if ((fp = fopen(fword, "r")) == NULL) {
-			fprintf(stderr, "Error opening file: %s\n", strerror(errno));
-		}
 		puts("|> Cracking...");
-		long long wn = 0;
-		while (!feof(fp)) {
-			wn++;
-			fgets(word, SIZE, fp);
-			word[strcspn(word, "\n")] = '\0';
-			char *result;
-			result = choice(algo, word);
-			int ans = verify_string(result, hash);
-			status_cracked(ans, word);
-			printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
-			fflush(stdout);
-		}
-		fclose(fp);
-		status_no_cracked();
+		dictionary(arg2, algo, fhash, fword, hash, duration);
 	} else if (argc == 7 && strcmp(arg, "-c") == 0) {
 		char *arg2 = argv[2];
 		char *algo = argv[3];
