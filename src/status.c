@@ -36,11 +36,8 @@ void status_no_cracked() {
 		"|>================XXXXXXX================<|"
 	);
 }
-<<<<<<< HEAD
 
 void status_time(double (*show_time)(), clock_t duration, long long wn) {
 	printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
 	fflush(stdout);
 }
-=======
->>>>>>> origin/main
