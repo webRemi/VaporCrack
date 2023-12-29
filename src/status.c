@@ -4,10 +4,7 @@
 #include <stdlib.h>
 #include "status.h"
 #include "color.h"
-<<<<<<< HEAD
 #include "chrono.h"
-=======
->>>>>>> origin/main
 
 void status_cracked(int ans, char *word) {
 	if (ans) {
