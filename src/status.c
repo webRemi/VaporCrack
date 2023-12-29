@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include "status.h"
 #include "color.h"
+<<<<<<< HEAD
 #include "chrono.h"
+=======
+>>>>>>> origin/main
 
 void status_cracked(int ans, char *word) {
 	if (ans) {
@@ -33,8 +36,11 @@ void status_no_cracked() {
 		"|>================XXXXXXX================<|"
 	);
 }
+<<<<<<< HEAD
 
 void status_time(double (*show_time)(), clock_t duration, long long wn) {
 	printf("\r|> Timer: %.2fsec | Attempt: %lld", show_time(duration), wn);
 	fflush(stdout);
 }
+=======
+>>>>>>> origin/main
